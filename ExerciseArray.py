@@ -7,6 +7,8 @@ class ExerciseArray (object):
 
     def add_record(self,Record):
         self.records_array.append(Record)
+    def pop_record(self):
+        self.records_array.pop()
 
     def print_array(self):
         for record in self.records_array:
