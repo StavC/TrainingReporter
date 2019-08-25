@@ -2,7 +2,9 @@ import sqlite3
 from sqlite3 import Error
 from collections import defaultdict
 from ExerciseArray import ExerciseArray
-
+from Record import Record
+from User import  User
+import operator
 
 def create_connection(db_file):
     conn = None
@@ -103,5 +105,17 @@ def plot_exercises_from_db(conn,user):
     rows=return_user_exercises(conn,user)
     my_exercises_dict=defaultdict(ExerciseArray)
     for row in rows:
+        temp_record=Record(row[3],row[2])
+        if row[1] not in my_exercises_dict:
+              temp_array=ExerciseArray(row[1])
+              temp_array.add_record(temp_record)
+              my_exercises_dict[row[1]]=temp_array
+        else:
+              my_exercises_dict[row[1]].add_record(temp_record)
 
+    user.my_exercises=my_exercises_dict
+    for name in user.my_exercises: # sorting by date
+        user.my_exercises[name].records_array.sort(key=lambda x: x.date, reverse=True)
+    print(type(user.my_exercises))
+    user.plot_exercise()
 

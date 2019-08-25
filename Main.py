@@ -15,7 +15,8 @@ def main():
     create_new_user(conn, stav)
     add_exercises_records_to_DB(conn, stav)
     return_user_info(conn,stav)
-    return_user_exercises(conn,stav)
+    #return_user_exercises(conn,stav)
+    plot_exercises_from_db(conn,stav)
 
 
 if __name__ == '__main__':
