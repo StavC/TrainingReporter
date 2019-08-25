@@ -4,6 +4,7 @@ import tkinter.filedialog
 from Record import Record
 from ExerciseArray import ExerciseArray
 from collections import defaultdict
+import json
 
 
 class User(object):
@@ -15,10 +16,7 @@ class User(object):
         self.weight = weight
         self.my_exercises = defaultdict(ExerciseArray)
 
-    # self.my_exercises=[]
 
-    # def add_exercise(self,exerciseArray):
-    #     self.my_exercises.append(exerciseArray)
 
     def plot_exercise(self):
 
