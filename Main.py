@@ -1,15 +1,22 @@
 from User import User
 import json
 from DataBase import *
-def main():
+from random import randint
 
-    stav=User("stav","Cohen")
-   # stav.read_csv()
-   # stav.plot_exercise()
-    conn=create_connection("D:\SQLlite\\UsersData.db")
-    data1,data2= my_tables()
-    create_table(conn,data1)
-    create_table(conn,data2)
+def main():
+    conn = create_connection("D:\SQLlite\\UsersData.db")
+    users_table, exercises_table = my_tables()
+    create_table(conn, users_table)
+    create_table(conn, exercises_table)
+    temp=randint(1,200000)
+    stav = User(temp, "stav", "Cohen", "Male")
+    stav.read_csv()
+    stav.plot_exercise()
+    create_new_user(conn, stav)
+    add_exercises_records_to_DB(conn, stav)
+    return_user_info(conn,stav)
+    return_user_exercises(conn,stav)
+
 
 if __name__ == '__main__':
     main()

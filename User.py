@@ -9,14 +9,14 @@ import json
 
 class User(object):
 
-    def __init__(self, first_name, last_name, height=0, weight=0):
+    def __init__(self, id, first_name, last_name, gender, height=0, weight=0):
+        self.id = id
         self.first_name = first_name
         self.last_name = last_name
         self.height = height
         self.weight = weight
+        self.gender = gender
         self.my_exercises = defaultdict(ExerciseArray)
-
-
 
     def plot_exercise(self):
 
@@ -47,7 +47,6 @@ class User(object):
                         self.my_exercises[last_name] = temp_array
                     else:
                         self.my_exercises[last_name].add_record(temp_record)
-
 
 
 '''

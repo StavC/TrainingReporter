@@ -1,12 +1,12 @@
+class ExerciseArray(object):
 
-class ExerciseArray (object):
+    def __init__(self, name):
+        self.name = name
+        self.records_array = []
 
-    def __init__(self,name):
-        self.name=name
-        self.records_array=[]
-
-    def add_record(self,Record):
+    def add_record(self, Record):
         self.records_array.append(Record)
+
     def pop_record(self):
         self.records_array.pop()
 
@@ -15,12 +15,11 @@ class ExerciseArray (object):
             print(self.name)
             print(f"{record.weight} KG Recorded at {record.date}")
 
-
     def length(self):
         return len(self.records_array)
 
     def get_weights(self):
-        weights_array=[]
+        weights_array = []
         for record in self.records_array:
             weights_array.append(record.weight)
         return weights_array
