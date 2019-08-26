@@ -21,32 +21,38 @@ class User(object):
     def plot_exercise(self):
 
         for exercise in self.my_exercises:
-            self.my_exercises[exercise].print_array()
+            #self.my_exercises[exercise].print_array()
             plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
             plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=300,
                         color='red', zorder=2)
-            plt.suptitle(exercise)
+            plt.suptitle(exercise[::-1])
             plt.show()
 
     def read_csv(self):
 
         csv_path = tkinter.filedialog.askopenfilename()
-        with open(csv_path, 'r') as csv_file:
+        with open(csv_path, 'r' ,encoding="cp1255") as csv_file:
             csv_reader = csv.reader(csv_file)
             for line in csv_reader:
-                if line[0] != "":
-                    last_name = line[0]
-                if line[0] == "":
-                    temp_record = Record(line[4], line[5])
-                    self.my_exercises[last_name].add_record(temp_record)
+
+                if line[7]=="" or line[7]=="משקל":
+                    continue
                 else:
-                    temp_record = Record(line[4], line[5])
-                    if last_name not in self.my_exercises:
-                        temp_array = ExerciseArray(last_name)
-                        temp_array.add_record(temp_record)
-                        self.my_exercises[last_name] = temp_array
-                    else:
+                   # print(line[0])
+                    if line[0] != "" :
+                        last_name = line[0]
+                    if line[0] == "":
+                        temp_record = Record(line[7], line[8])
                         self.my_exercises[last_name].add_record(temp_record)
+                    else:
+                        temp_record = Record(line[7], line[8])
+                        if last_name not in self.my_exercises:
+                            temp_array = ExerciseArray(last_name)
+                            temp_array.add_record(temp_record)
+                            self.my_exercises[last_name] = temp_array
+                        else:
+                            self.my_exercises[last_name].add_record(temp_record)
+
 
 
 '''

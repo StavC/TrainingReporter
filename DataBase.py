@@ -3,6 +3,7 @@ from sqlite3 import Error
 from collections import defaultdict
 from ExerciseArray import ExerciseArray
 from Record import Record
+from datetime import datetime
 from User import  User
 import operator
 
@@ -88,7 +89,7 @@ def return_user_info(conn,user):
     cur=conn.cursor()
     cur.execute("SELECT * FROM Users WHERE Id=?",(user.id,))
     rows=cur.fetchall()
-    print(rows)
+   # print(rows)
     #print(rows[0][0])
     #print(rows[0][1])
     #print(rows[0][2])
@@ -98,7 +99,7 @@ def return_user_exercises(conn,user):
     cur=conn.cursor()
     cur.execute("SELECT * FROM Exercises WHERE Id=?",(user.id,))
     rows=cur.fetchall()
-    print(rows)
+    #print(rows)
     return rows
 
 def plot_exercises_from_db(conn,user):
@@ -115,7 +116,7 @@ def plot_exercises_from_db(conn,user):
 
     user.my_exercises=my_exercises_dict
     for name in user.my_exercises: # sorting by date
-        user.my_exercises[name].records_array.sort(key=lambda x: x.date, reverse=True)
-    print(type(user.my_exercises))
+        user.my_exercises[name].records_array.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%y"))
+   # print(type(user.my_exercises))
     user.plot_exercise()
 
