@@ -4,6 +4,7 @@ import tkinter.filedialog
 from Record import Record
 from ExerciseArray import ExerciseArray
 from collections import defaultdict
+from DataBase import *
 import json
 
 
@@ -21,38 +22,41 @@ class User(object):
     def plot_exercise(self):
 
         for exercise in self.my_exercises:
-            #self.my_exercises[exercise].print_array()
+            # self.my_exercises[exercise].print_array()
             plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
             plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=300,
                         color='red', zorder=2)
             plt.suptitle(exercise[::-1])
             plt.show()
 
-    def read_csv(self):
-
+    def read_csv_create_or_load_user(self=0):
         csv_path = tkinter.filedialog.askopenfilename()
-        with open(csv_path, 'r' ,encoding="cp1255") as csv_file:
+        with open(csv_path, 'r', encoding="cp1255") as csv_file:
             csv_reader = csv.reader(csv_file)
+            need_to_create = True
             for line in csv_reader:
+                if need_to_create and line[12] != "תז":
+                    curr_user = User(line[12], line[10], line[11], line[13], line[14], line[15])
+                    need_to_create = False
 
-                if line[7]=="" or line[7]=="משקל":
+                if line[7] == "" or line[7] == "משקל":
                     continue
                 else:
-                   # print(line[0])
-                    if line[0] != "" :
+                    # print(line[0])
+                    if line[0] != "":
                         last_name = line[0]
                     if line[0] == "":
                         temp_record = Record(line[7], line[8])
-                        self.my_exercises[last_name].add_record(temp_record)
+                        curr_user.my_exercises[last_name].add_record(temp_record)
                     else:
                         temp_record = Record(line[7], line[8])
-                        if last_name not in self.my_exercises:
+                        if last_name not in curr_user.my_exercises:
                             temp_array = ExerciseArray(last_name)
                             temp_array.add_record(temp_record)
-                            self.my_exercises[last_name] = temp_array
+                            curr_user.my_exercises[last_name] = temp_array
                         else:
-                            self.my_exercises[last_name].add_record(temp_record)
-
+                            curr_user.my_exercises[last_name].add_record(temp_record)
+        return curr_user
 
 
 '''

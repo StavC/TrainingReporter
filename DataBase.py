@@ -4,7 +4,6 @@ from collections import defaultdict
 from ExerciseArray import ExerciseArray
 from Record import Record
 from datetime import datetime
-from User import  User
 import operator
 
 def create_connection(db_file):
@@ -120,3 +119,13 @@ def plot_exercises_from_db(conn,user):
    # print(type(user.my_exercises))
     user.plot_exercise()
 
+def check_if_need_to_create(conn,id):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM Users WHERE Id=?", (id,))
+    rows = cur.fetchall()
+    if rows:
+        print("not need")
+        return False
+    else:
+        print("need")
+        return True
