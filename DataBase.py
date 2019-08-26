@@ -124,8 +124,8 @@ def check_if_need_to_create(conn,id):
     cur.execute("SELECT * FROM Users WHERE Id=?", (id,))
     rows = cur.fetchall()
     if rows:
-        print("not need")
+        print("not need to create user in table")
         return False
     else:
-        print("need")
+        print("need to create user in table")
         return True
