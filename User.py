@@ -36,7 +36,7 @@ class User(object):
             need_to_create = True
             for line in csv_reader:
                 if need_to_create and line[12] != "תז":
-                    curr_user = User(line[12], line[10], line[11], line[13], line[14], line[15])
+                    curr_user = User(line[12], line[10], line[11], line[13], line[15], line[14])
                     need_to_create = False
 
                 if line[7] == "" or line[7] == "משקל":

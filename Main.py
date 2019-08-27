@@ -12,6 +12,7 @@ def main():
     create_table(conn, exercises_table)
     root= Tk()
     gui = GUI(root)
+    root.title("WhyFitness Reporter")
     root.mainloop()
 
     '''

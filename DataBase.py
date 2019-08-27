@@ -129,3 +129,9 @@ def check_if_need_to_create(conn,id):
     else:
         print("need to create user in table")
         return True
+
+def search_user(conn,id):
+    cur = conn.cursor()
+    cur.execute("SELECT Id FROM Exercises WHERE Id=?", (id,))
+    user_id = cur.fetchall()
+    return user_id
