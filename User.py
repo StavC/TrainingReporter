@@ -10,13 +10,14 @@ import json
 
 class User(object):
 
-    def __init__(self, id, first_name, last_name, gender, height=0, weight=0):
+    def __init__(self, id, first_name, last_name, gender, height, weight,age):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
         self.height = height
         self.weight = weight
         self.gender = gender
+        self.age=age
         self.my_exercises = defaultdict(ExerciseArray)
 
     def plot_exercise(self):
@@ -36,7 +37,7 @@ class User(object):
             need_to_create = True
             for line in csv_reader:
                 if need_to_create and line[12] != "תז":
-                    curr_user = User(line[12], line[10], line[11], line[13], line[15], line[14])
+                    curr_user = User(line[12], line[10], line[11], line[13], line[15], line[14],line[16])
                     need_to_create = False
 
                 if line[7] == "" or line[7] == "משקל":

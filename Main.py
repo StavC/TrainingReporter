@@ -4,7 +4,7 @@ from DataBase import *
 from random import randint
 from GUI import *
 
-
+#todo fix CSV BUGS of dates and look
 def main():
     conn = create_connection("D:\SQLlite\\UsersData.db")
     users_table, exercises_table = my_tables()

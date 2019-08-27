@@ -32,7 +32,8 @@ def my_tables():
                                             Lname text NOT NULL,
                                             Gender text,
                                             Weight integer,
-                                            Height integer
+                                            Height integer,
+                                            Age integer
                                         ); """
 
     sql_create_exercises_table = """CREATE TABLE IF NOT EXISTS Exercises (
@@ -47,8 +48,8 @@ def my_tables():
 
 
 def insert_user(conn, user):
-    sql = ''' INSERT INTO Users(Id,Fname,Lname,Gender,Weight,Height)
-              VALUES(?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO Users(Id,Fname,Lname,Gender,Weight,Height,Age)
+              VALUES(?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, user)
     return cur.lastrowid
@@ -56,7 +57,7 @@ def insert_user(conn, user):
 
 def create_new_user(conn, user):
     with conn:
-        curr_user = (user.id, user.first_name, user.last_name, user.gender, user.weight, user.height)
+        curr_user = (user.id, user.first_name, user.last_name, user.gender, user.weight, user.height,user.age)
         curr_id = insert_user(conn, curr_user)
 
 
