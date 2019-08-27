@@ -99,7 +99,6 @@ def return_user_exercises(conn,user):
     cur=conn.cursor()
     cur.execute("SELECT * FROM Exercises WHERE Id=?",(user.id,))
     rows=cur.fetchall()
-    #print(rows)
     return rows
 
 def plot_exercises_from_db(conn,user):
@@ -119,6 +118,7 @@ def plot_exercises_from_db(conn,user):
         user.my_exercises[name].records_array.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%y"))
    # print(type(user.my_exercises))
     user.plot_exercise()
+
 
 def check_if_need_to_create(conn,id):
     cur = conn.cursor()
