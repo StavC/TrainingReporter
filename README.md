@@ -6,6 +6,8 @@ TrainingReporter is a program that gonna receive monthly progress reports from t
 
 and most importanly help the trainnes keep up their motivation with details,  progress reports and comparasions to the rest of the Trainees
 
+Wrritten in Python and SQLite3
+
 Adding Some SneakPeaks from my work so far 
 
 main UI
