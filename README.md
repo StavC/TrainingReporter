@@ -11,7 +11,7 @@ Wrritten in Python and SQLite3
 Adding Some SneakPeaks from my work so far 
 
 main UI
-![alt text](https://i.imgur.com/uXF60OT.png)
+![alt text](https://i.imgur.com/UsCED3x.png)
 Some Statics 
 ![alt_text](https://i.imgur.com/Uzal7Xr.png)
 Starting to build out the monthly reports in PDF Format
