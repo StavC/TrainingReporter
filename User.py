@@ -12,7 +12,7 @@ from io import BytesIO
 
 class User(object):
 
-    def __init__(self, id, first_name, last_name, gender, height, weight,age):
+    def __init__(self, id, first_name, last_name, gender, height, weight,age,start_date,current_weight):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -20,6 +20,8 @@ class User(object):
         self.weight = weight
         self.gender = gender
         self.age=age
+        self.start_date=start_date
+        self.current_weight=current_weight
         self.my_exercises = defaultdict(ExerciseArray)
 
     def plot_exercise(self):
@@ -76,8 +78,15 @@ class User(object):
             need_to_create = True
             for line in csv_reader:
                 if need_to_create and line[12] != "תז":
-                    curr_user = User(line[12], line[10], line[11], line[13], line[15], line[14],line[16])
+                    curr_user = User(line[12], line[10], line[11], line[13], line[15], line[14],line[16],line[17],line[18])
                     need_to_create = False
+                if not need_to_create:
+                    conn = create_connection("D:\SQLlite\\UsersData.db")
+                    cur=conn.cursor()
+                    cur.execute('''UPDATE Users 
+                            SET CurrentWeight=?
+                            WHERE Id=?''',(line[18],line[12],))
+                    conn.commit()
 
                 if line[7] == "" or line[7] == "משקל":
                     continue
