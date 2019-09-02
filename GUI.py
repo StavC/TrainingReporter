@@ -175,7 +175,7 @@ class GUI():
             for row in rows:
                temp_record=Record(row[1],row[0])
                temp_list.append(temp_record)
-            temp_list.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%y"))
+            temp_list.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%Y"))
             for record in temp_list:
                 weights_list.append(record.weight)
                 dates_list.append(record.date)

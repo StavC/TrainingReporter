@@ -115,7 +115,7 @@ def plot_exercises_from_db(conn,user):
 
     user.my_exercises=my_exercises_dict
     for name in user.my_exercises: # sorting by date
-        user.my_exercises[name].records_array.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%y"))
+        user.my_exercises[name].records_array.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%Y"))
    # print(type(user.my_exercises))
     user.plot_exercise()
 
