@@ -7,6 +7,6 @@ TrainingReporter is a program that gonna receive monthly progress reports from t
 and most importanly help the trainnes keep up their motivation with details,  progress reports and comparasions to the rest of the Trainees
 
 
-![alt text]https://imgur.com/uXF60OT)
-![alt_text]https://imgur.com/Uzal7Xr)
-![alt_text]https://imgur.com/4cole6z)
+![alt text](https://imgur.com/uXF60OT)
+![alt_text](https://imgur.com/Uzal7Xr)
+![alt_text](https://imgur.com/4cole6z)
