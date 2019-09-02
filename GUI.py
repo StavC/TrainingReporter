@@ -49,11 +49,15 @@ class GUI():
         self.gender_label.grid(column=10, row=6, sticky=(E, S))
         self.height_label.grid(column=10, row=7, sticky=(E, S))
         self.weight_label.grid(column=10, row=8, sticky=(E, S))
+        self.gender_review_button=Button(self.frame,text="פילוג מין",command=self.gender_review_function)
+        self.gender_review_button.grid(column=9,row=2,sticky=(E,S))
+        self.most_popular_exercise_button=Button(self.frame,text="התרגיל הפופלרי ביותר",command=self.most_popular_exercise_function)
+        self.most_popular_exercise_button.grid(column=9,row=3,sticky=(E,S))
         self.single_report_button=Button(self.frame,text="הפקת דוח יחיד",command=self.single_report_function)
         self.single_report_button.grid(column=2,row=2)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
-        #exercises label and listbox with scroller%
+        #exercises label and listbox with scroller
         exercises = []
         scrollbar = Scrollbar(self.frame)
         scrollbar.grid(column=1, row=2, sticky=(N, S))
@@ -186,5 +190,57 @@ class GUI():
             plt.show()
         else:
             messagebox.showinfo("select an exercise","please select an exercise from the list")
+
+
+    def gender_review_function(self):
+
+        curr=self.conn.cursor()
+        curr.execute("SELECT COUNT(DISTINCT Id) FROM Users WHERE Gender=?",("זכר",))
+        rows=curr.fetchall()
+        male=rows[0][0]
+        curr.execute("SELECT COUNT(DISTINCT Id) FROM Users WHERE Gender=?", ("נקבה",))
+        rows = curr.fetchall()
+        female=rows[0][0]
+        labels='רכז','הבקנ'
+        fig1,ax1=plt.subplots()
+        ax1.pie([male,female],labels=labels,autopct='%1.1f%%',shadow=True,startangle=90)
+        ax1.axis('equal')
+        plt.show()
+
+    def most_popular_exercise_function(self):
+
+        def make_autopct(values):
+            def my_autopct(pct):
+                total = sum(values)
+                val = int(round(pct * total / 100.0))
+                return '{p:.2f}%  ({v:d})'.format(p=pct, v=val)
+
+            return my_autopct
+
+        curr=self.conn.cursor()
+        curr.execute("SELECT DISTINCT Id,ExerciseName FROM Exercises  ")
+        rows=curr.fetchall()
+        my_dict={}
+
+        for row in rows:
+
+          if row[1] not in my_dict:
+              my_dict[row[1]]=1
+          else:
+              my_dict[row[1]]=my_dict[row[1]]+1
+        labels=[]
+        counts=[]
+        for x,y in my_dict.items():
+            print(x,y)
+            labels.append(x[::-1])
+            counts.append(y)
+
+        print(labels)
+        fig1, ax1 = plt.subplots()
+        ax1.pie(counts, labels=labels,autopct=make_autopct(counts),
+                shadow=True, startangle=90)
+        ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+        plt.show()
 
 

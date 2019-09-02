@@ -3,6 +3,11 @@ import csv
 import tkinter.filedialog
 import matplotlib.backends.backend_pdf
 from DataBase import *
+from matplotlib.gridspec import GridSpec
+
+import base64
+from io import BytesIO
+
 
 
 class User(object):
@@ -20,9 +25,8 @@ class User(object):
     def plot_exercise(self):
         pdf = matplotlib.backends.backend_pdf.PdfPages("FullReport.pdf")
 
-
         for exercise in self.my_exercises:
-            # self.my_exercises[exercise].print_array()
+
             fig, ax = plt.subplots()
             plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
             plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=10,
@@ -31,37 +35,39 @@ class User(object):
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
             plt.gcf().subplots_adjust(bottom=0.20)
 
-
-            if self.my_exercises[exercise].length()>100:
+            if self.my_exercises[exercise].length() > 100:
                 fig.set_size_inches(100, 100)
 
-            elif self.my_exercises[exercise].length()>90:
+            elif self.my_exercises[exercise].length() > 90:
                 fig.set_size_inches(90, 90)
 
-            elif self.my_exercises[exercise].length()>80:
+            elif self.my_exercises[exercise].length() > 80:
                 fig.set_size_inches(80, 80)
 
-            elif self.my_exercises[exercise].length()>70:
+            elif self.my_exercises[exercise].length() > 70:
                 fig.set_size_inches(70, 70)
 
-            elif self.my_exercises[exercise].length()>60:
+            elif self.my_exercises[exercise].length() > 60:
                 fig.set_size_inches(60, 60)
 
-            elif self.my_exercises[exercise].length()>50:
+            elif self.my_exercises[exercise].length() > 50:
                 fig.set_size_inches(50, 50)
 
-            elif self.my_exercises[exercise].length()>40:
+            elif self.my_exercises[exercise].length() > 40:
                 fig.set_size_inches(40, 40)
 
-            elif self.my_exercises[exercise].length()>30:
+            elif self.my_exercises[exercise].length() > 30:
                 fig.set_size_inches(30, 30)
 
-            elif self.my_exercises[exercise].length()>20:
+            elif self.my_exercises[exercise].length() > 20:
                 fig.set_size_inches(20, 20)
-            plt.show()
-            pdf.savefig(fig)
-        pdf.close()
+            # fig.show()
 
+            pdf.savefig(fig)
+
+
+
+        pdf.close()
 
     def read_csv_create_or_load_user(self=0):
         csv_path = tkinter.filedialog.askopenfilename()
