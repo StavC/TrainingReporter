@@ -7,6 +7,8 @@ from DataBase import *
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf
 import numpy as np
+from PyPDF2 import PdfFileMerger,PdfFileReader,PdfFileWriter
+import inspect
 
 
 
@@ -26,7 +28,7 @@ class GUI():
         self.create_user_button = Button(self.frame, text="טעינת גילון משתמש", command=self.load_user_button_function)
         self.create_user_button.grid(column=0, row=0, sticky=(S, E))
         self.quit_button = Button(self.frame, text="יציאה", command=self.frame.quit)
-        self.quit_button.grid(column=5, row=0, sticky=(E, S))
+        self.quit_button.grid(column=10, row=0, sticky=(E, S))
         self.full_report_button = Button(self.frame, text="דוח התקדמות מלא", state="disabled",
                                          command=self.print_full_report_button_function)
         self.full_report_button.grid(column=2, row=0, sticky=S)
@@ -64,6 +66,8 @@ class GUI():
         self.multi_report_button.grid(column=2, row=2)
         self.improvment_button=Button(self.frame,text="התקדמות בתרגילים",command=self.improvment_function,state="disabled")
         self.improvment_button.grid(column=2,row=3)
+        self.body_weights_button=Button(self.frame,text="מעקב משקל גוף",command=self.body_weights_function,state="disabled")
+        self.body_weights_button.grid(column=2,row=4)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -83,10 +87,17 @@ class GUI():
         if check_if_need_to_create(self.conn, self.curr_user.id):
             print("new user created")
             create_new_user(self.conn, self.curr_user)  # new user in DB
+        else:
+            curr = self.conn.cursor()
+            datetimeObj = datetime.now()
+            date_stamp = datetimeObj.strftime("%d/%m/%Y")
+            curr.execute("INSERT INTO BodyWeights(Id,Date,Weight)VALUES(?,?,?)", (self.curr_user.id, date_stamp, self.curr_user.current_weight,))
+
         add_exercises_records_to_DB(self.conn, self.curr_user)  # add his exercises to DB
         self.full_report_button.config(state="normal")
-        self.biggest_improvment_button.config(state="normal")
+        self.improvment_button.config(state="normal")
         self.multi_report_button.config(state="normal")
+        self.body_weights_button.config(state="normal")
         plot_exercises_from_db(self.conn, self.curr_user)
         self.add_personal_info_to_labels()
 
@@ -96,6 +107,9 @@ class GUI():
             print("load user first no id in ")
         else:
             plot_exercises_from_db(self.conn, self.curr_user)
+            self.improvment_function()
+            self.body_weights_function()
+
 
     def search_user_button_function(self):
         try:
@@ -115,6 +129,7 @@ class GUI():
                 self.full_report_button.config(state="normal")
                 self.improvment_button.config(state="normal")
                 self.multi_report_button.config(state="normal")
+                self.body_weights_button.config(state="normal")
 
                 self.add_personal_info_to_labels()
             else:
@@ -124,6 +139,8 @@ class GUI():
                 self.full_report_button.config(state="disabled")
                 self.improvment_button.config(state="disabled")
                 self.multi_report_button.config(state="disabled")
+                self.body_weights_button.config(state="disabled")
+
                 self.delete_personal_info_from_labels()
         except ValueError:
             messagebox.showerror("Error", "Enter only numbers (ID)")
@@ -189,7 +206,7 @@ class GUI():
 
     def multi_report_function(self):
         if self.exercises_list.curselection():
-            pdf = matplotlib.backends.backend_pdf.PdfPages("SelectedReport.pdf")
+            pdf = matplotlib.backends.backend_pdf.PdfPages('SelectedReport.pdf')
             selected_list=self.exercises_list.curselection()
             print(selected_list)
             for i in range(0,len(selected_list)):
@@ -254,7 +271,6 @@ class GUI():
 
 
 
-
     def statics_for_trainer_function(self):
 
         def make_autopct(values):
@@ -280,6 +296,7 @@ class GUI():
             labels.append(x[::-1])
             counts.append(y)
         fig1, axs = plt.subplots(2, 2)
+
         axs[0, 0].pie(counts, labels=labels, autopct=make_autopct(counts),
                       shadow=True, startangle=90)
         axs[0, 0].axis('equal')
@@ -293,7 +310,8 @@ class GUI():
         rows = curr.fetchall()
         female = rows[0][0]
         labels = 'רכז', 'הבקנ'
-        axs[1, 1].pie([male, female], labels=labels, autopct=make_autopct([male,female]), shadow=True, startangle=90)
+        colors = ['cornflowerblue', 'indigo']
+        axs[1, 1].pie([male, female], labels=labels, autopct=make_autopct([male,female]), shadow=True, startangle=90,colors=colors)
         axs[1, 1].axis('equal')
         temp = "מין"
         axs[1, 1].set_title(temp[::-1])
@@ -337,6 +355,30 @@ class GUI():
 
 
     def improvment_function(self):
+
+        def autolabel(rects,rects2, xpos='center'):
+            ha = {'center': 'center', 'right': 'left', 'left': 'right'}
+            offset = {'center': 0, 'right': 1, 'left': -1}
+            i=0
+            if rects2==0:
+                 for rect in rects:
+                     height = rect.get_height()
+                     plt.annotate('{}'.format(height),
+                                 xy=(rect.get_x() + rect.get_width() / 2, height-5),
+                                 xytext=(offset[xpos] * 3, 3),  # use 3 points offset
+                                 textcoords="offset points",  # in both directions
+                                 ha=ha[xpos], va='bottom')
+            else:
+                for rect in rects:
+                    height = rect.get_height()+rects2[i].get_height()
+                    plt.annotate('{}'.format(height),
+                                 xy=(rect.get_x() + rect.get_width() / 2, height),
+                                 xytext=(offset[xpos] * 3, 3),  # use 3 points offset
+                                 textcoords="offset points",  # in both directions
+                                 ha=ha[xpos], va='bottom')
+                    i +=1
+
+
         curr=self.conn.cursor()
         curr.execute("SELECT * FROM Exercises WHERE Id=?", (self.curr_user.id,))
         rows=curr.fetchall()
@@ -363,9 +405,11 @@ class GUI():
             min_list.append(min(temp_weights))
             exercises_list_for_min_max.append(self.curr_user.my_exercises[exercise].name[::-1])
             max_list.append(max(temp_weights)-min(temp_weights))
-
-        ind=np.arange(5)
+        ind=np.arange(len(min_list))
         width=0.35
+        fig,ax=plt.subplots()
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
+        plt.gcf().subplots_adjust(bottom=0.20)
         p1=plt.bar(ind,min_list,width,color="blue")
         p2=plt.bar(ind,max_list,width,bottom=min_list,color="cornflowerblue")
 
@@ -374,5 +418,60 @@ class GUI():
         plt.xticks(ind, exercises_list_for_min_max)
         totalmax=((max(max_list))+(max(min_list)))
         plt.yticks(np.arange(0, totalmax+20, 10))
-        plt.legend((p1[0], p2[0]), ('משקל מינימלי בתרגיל'[::-1], 'משקל מקסימלי בתרגיל'[::-1]))
-        plt.show()
+        plt.legend((p2[0], p1[0]), ('משקל מקסימלי בתרגיל'[::-1], 'משקל מינימלי בתרגיל'[::-1]))
+        autolabel(p1,0)
+        autolabel(p2,p1)
+        fig.show()
+        if inspect.stack()[1].function=="print_full_report_button_function": ##checking if the function was called from a full report button
+             pdf = matplotlib.backends.backend_pdf.PdfPages("DiagramWeights.pdf")
+             pdf.savefig(fig)
+             pdf.close()
+             file1 = PdfFileReader('DiagramWeights.pdf', "rb")
+             file2=PdfFileReader('FullExercisesReport.pdf',"rb")
+             output=PdfFileWriter()
+             output.addPage(file1.getPage(0))
+             output.appendPagesFromReader(file2)
+             outputStream=open('MonthlyReport.pdf',"wb")
+             output.write(outputStream)
+             outputStream.close()
+
+
+
+    def body_weights_function(self):
+
+        cur=self.conn.cursor()
+        cur.execute("SELECT Weight,Date FROM BodyWeights WHERE Id=?",(self.curr_user.id,))
+        rows=cur.fetchall()
+        temp_list = []
+        dates_list = []
+        weights_list = []
+        for row in rows:
+            temp_record = Record(row[0], row[1])
+            temp_list.append(temp_record)
+        temp_list.sort(key=lambda date: datetime.strptime(date.date, "%d/%m/%Y"))
+        for record in temp_list:
+            weights_list.append(record.weight)
+            dates_list.append(record.date)
+        fig, ax = plt.subplots()
+        plt.plot(dates_list, weights_list, zorder=1)
+        plt.scatter(dates_list, weights_list, s=10,
+                    color='red', zorder=2)
+        plt.suptitle("משקל גוף"[::-1])
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
+        plt.gcf().subplots_adjust(bottom=0.20)
+        fig.show()
+        if inspect.stack()[1].function=="print_full_report_button_function": ##checking if the function was called from a full report button
+             pdf = matplotlib.backends.backend_pdf.PdfPages("BodyWeights.pdf")
+             pdf.savefig(fig)
+             pdf.close()
+             file1 = PdfFileReader('BodyWeights.pdf', "rb")
+             file2=PdfFileReader('MonthlyReport.pdf',"rb")
+             output=PdfFileWriter()
+             output.addPage(file1.getPage(0))
+             output.appendPagesFromReader(file2)
+             outputStream=open('MonthlyReport.pdf',"wb")
+             output.write(outputStream)
+             outputStream.close()
+
+
+

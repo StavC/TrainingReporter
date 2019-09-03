@@ -25,11 +25,12 @@ class User(object):
         self.my_exercises = defaultdict(ExerciseArray)
 
     def plot_exercise(self):
-        pdf = matplotlib.backends.backend_pdf.PdfPages("FullReport.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages("FullExercisesReport.pdf")
 
         for exercise in self.my_exercises:
 
             fig, ax = plt.subplots()
+
             plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
             plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=10,
                         color='red', zorder=2)
@@ -63,9 +64,10 @@ class User(object):
 
             elif self.my_exercises[exercise].length() > 20:
                 fig.set_size_inches(20, 20)
-            # fig.show()
+            fig.show()
 
             pdf.savefig(fig)
+
 
 
 

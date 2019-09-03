@@ -7,9 +7,10 @@ from GUI import *
 #todo fix CSV BUGS of look
 def main():
     conn = create_connection("D:\SQLlite\\UsersData.db")
-    users_table, exercises_table = my_tables()
+    users_table, exercises_table,body_weights_table = my_tables()
     create_table(conn, users_table)
     create_table(conn, exercises_table)
+    create_table(conn,body_weights_table)
     root= Tk()
     gui = GUI(root)
     root.title("WhyFitness Reporter")

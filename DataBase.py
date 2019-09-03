@@ -4,6 +4,7 @@ from collections import defaultdict
 from ExerciseArray import ExerciseArray
 from Record import Record
 from datetime import datetime
+
 import operator
 
 def create_connection(db_file):
@@ -46,7 +47,16 @@ def my_tables():
                                         PRIMARY KEY(Id,ExerciseName,Date)
                                         FOREIGN KEY (id) REFERENCES Users (id)
                                     );"""
-    return sql_create_users_table, sql_create_exercises_table
+
+    sql_create_body_weights_table = """CREATE TABLE IF NOT EXISTS BodyWeights(
+                                    Id integer,
+                                    Date text,
+                                    Weight integer NOT NULL,
+                                    PRIMARY KEY(Id,Date,Weight)
+                                    FOREIGN KEY (Id) REFERENCES Users (Id)
+                                    );"""
+
+    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table
 
 
 def insert_user(conn, user):
@@ -54,6 +64,13 @@ def insert_user(conn, user):
               VALUES(?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, user)
+
+    datetimeObj=datetime.now()
+    print(datetimeObj)
+    date_stamp=datetimeObj.strftime("%d/%m/%Y")
+    print(date_stamp)
+    print(user)
+    cur.execute("INSERT INTO BodyWeights(Id,Date,Weight)VALUES(?,?,?)",(user[0],date_stamp,user[8],))
     return cur.lastrowid
 
 
