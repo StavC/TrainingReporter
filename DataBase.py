@@ -4,7 +4,8 @@ from collections import defaultdict
 from ExerciseArray import ExerciseArray
 from Record import Record
 from datetime import datetime
-
+import tkinter.filedialog
+import csv
 import operator
 
 def create_connection(db_file):
@@ -56,7 +57,19 @@ def my_tables():
                                     FOREIGN KEY (Id) REFERENCES Users (Id)
                                     );"""
 
-    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table
+    sql_create_benchpress_standards="""CREATE TABLE IF NOT EXISTS BenchPress(
+                                    BodyWeight integer,
+                                    Beginner integer,
+                                    Novice integer,
+                                    Intermediate integer,
+                                    Advanced integer,
+                                    Elite integer,
+                                    Gender text,
+                                    PRIMARY KEY(BodyWeight,Gender)
+                                    );"""
+
+    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table,sql_create_benchpress_standards
+
 
 
 def insert_user(conn, user):

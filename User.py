@@ -107,6 +107,7 @@ class User(object):
                             curr_user.my_exercises[last_name] = temp_array
                         else:
                             curr_user.my_exercises[last_name].add_record(temp_record)
+        csv_file.close()
         return curr_user
 
 

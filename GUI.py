@@ -68,6 +68,10 @@ class GUI():
         self.improvment_button.grid(column=2,row=3)
         self.body_weights_button=Button(self.frame,text="מעקב משקל גוף",command=self.body_weights_function,state="disabled")
         self.body_weights_button.grid(column=2,row=4)
+        self.load_bench_button=Button(self.frame,text="טעינת בנץ ממוצע",command=self.insert_benchpress_weights)
+        self.load_bench_button.grid(column=9,row=4)
+        self.user_compare_to_benchpress_button=Button(self.frame,text="ממוצע בנץ-פרס",command=self.user_compare_to_benchpress_function)
+        self.user_compare_to_benchpress_button.grid(column=2,row=5)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -473,5 +477,18 @@ class GUI():
              output.write(outputStream)
              outputStream.close()
 
+    def insert_benchpress_weights(self):
+        cur = self.conn.cursor()
+        csv_path = tkinter.filedialog.askopenfilename()
+        with open(csv_path, 'r', encoding="cp1255") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for line in csv_reader:
+                if line[5] != "Elite":
+                    cur.execute("INSERT INTO BenchPress(BodyWeight,Beginner,Novice,Intermediate,Advanced,Elite,Gender)VALUES(?,?,?,?,?,?,?)", (line[0],line[1],line[2],line[3],line[4],line[5],line[6],))
+                    self.conn.commit()
+                if line[5] == "":
+                    continue
+        csv_file.close()
 
-
+    def user_compare_to_benchpress_function(self):
+        print(self.curr_user.current_weight)
