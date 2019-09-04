@@ -31,7 +31,7 @@ a diagram to see all exercises minium weight and maximum weight (to see how you 
 
 Starting to build out the monthly reports in PDF Format
 
-![alt_text](https://i.imgur.com/4cole6z.png)
+![alt_text](https://i.imgur.com/ZFxODIV.png)
 
 
 MUCH MORE COMING SOON!
