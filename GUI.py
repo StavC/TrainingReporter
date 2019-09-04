@@ -24,17 +24,19 @@ class GUI():
     def create_widgets(self):
         ### GRID and buttons from here down
         self.frame.grid()
-        self.create_user_button = Button(self.frame, text="טעינת גילון משתמש", command=self.load_user_button_function)
+        self.create_user_button = Button(self.frame, text="טעינת גילון משתמש", command=self.load_user_button_function,
+                                         height=1, width=20)
         self.create_user_button.grid(column=0, row=0, sticky=(S, E))
-        self.quit_button = Button(self.frame, text="יציאה", command=self.frame.quit)
+        self.quit_button = Button(self.frame, text="יציאה", command=self.frame.quit, height=1, width=20)
         self.quit_button.grid(column=10, row=0, sticky=(E, S))
         self.full_report_button = Button(self.frame, text="דוח התקדמות מלא", state="disabled",
-                                         command=self.print_full_report_button_function)
+                                         command=self.print_full_report_button_function, height=1, width=20)
         self.full_report_button.grid(column=2, row=0, sticky=S)
         self.search = StringVar()
-        self.search_field = Entry(self.frame, width=20, textvariable=self.search)
+        self.search_field = Entry(self.frame, textvariable=self.search, width=25)
         self.search_field.grid(column=3, row=0, sticky=(S, E))
-        self.search_button = Button(self.frame, text="חיפוש", width=10, command=self.search_user_button_function)
+        self.search_button = Button(self.frame, text="חיפוש", command=self.search_user_button_function, height=1,
+                                    width=20)
         self.search_button.grid(column=4, row=0, sticky=(S, E))
         self.personal_info_label = Label(self.frame, text="פרטים אישיים ", font="Helvetica 12 underline")
         self.id_label = Label(self.frame, text=":תז")
@@ -59,27 +61,32 @@ class GUI():
         # self.gender_review_button = Button(self.frame, text="פילוג מין", command=self.gender_review_function)
         # self.gender_review_button.grid(column=9, row=2, sticky=(E, S))
         self.statics_for_trainer_button = Button(self.frame, text="סטטיסטיקת מתאמנים",
-                                                 command=self.statics_for_trainer_function)
+                                                 command=self.statics_for_trainer_function, height=1, width=20)
         self.statics_for_trainer_button.grid(column=9, row=3, sticky=(E, S))
         self.multi_report_button = Button(self.frame, text="הפקת דוחות נבחרים", command=self.multi_report_function,
-                                          state="disabled")
+                                          state="disabled", height=1, width=20)
         self.multi_report_button.grid(column=2, row=2)
         self.improvment_button = Button(self.frame, text="התקדמות בתרגילים", command=self.improvment_function,
-                                        state="disabled")
+                                        state="disabled", height=1, width=20)
         self.improvment_button.grid(column=2, row=3)
         self.body_weights_button = Button(self.frame, text="מעקב משקל גוף", command=self.body_weights_function,
-                                          state="disabled")
+                                          state="disabled", height=1, width=20)
         self.body_weights_button.grid(column=2, row=4)
-        self.load_bench_button = Button(self.frame, text="טעינת בנץ ממוצע", command=self.insert_benchpress_weights)
+        self.load_bench_button = Button(self.frame, text="טעינת בנץ ממוצע", command=self.insert_benchpress_weights,
+                                        height=1, width=20)
         self.load_bench_button.grid(column=9, row=4)
-        self.load_squat_button = Button(self.frame, text="טעינת סקוואט ממוצע", command=self.insert_squat_weights)
+        self.load_squat_button = Button(self.frame, text="טעינת סקוואט ממוצע", command=self.insert_squat_weights,
+                                        height=1, width=20)
         self.load_squat_button.grid(column=9, row=5)
-        self.load_deadlift_button = Button(self.frame, text="טעינת דדליפט ממוצע", command=self.insert_deadlift_weights)
+        self.load_deadlift_button = Button(self.frame, text="טעינת דדליפט ממוצע", command=self.insert_deadlift_weights,
+                                           height=1, width=20)
         self.load_deadlift_button.grid(column=9, row=6)
         self.load_headpress_button = Button(self.frame, text="טעינת לחיצת ראש ממוצע",
-                                            command=self.insert_headpress_weights)
+                                            command=self.insert_headpress_weights, height=1, width=20)
         self.load_headpress_button.grid(column=9, row=7)
-        self.user_compare_to_avg_button = Button(self.frame, text="ממוצע משקלים עבודה מרכזיים ", command=self.user_compare_to_avg_function,state="disabled")
+        self.user_compare_to_avg_button = Button(self.frame, text="ממוצע משקלים מרכזיים ",
+                                                 command=self.user_compare_to_avg_function, state="disabled", height=1,
+                                                 width=20)
         self.user_compare_to_avg_button.grid(column=2, row=5)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
@@ -123,9 +130,12 @@ class GUI():
         if self.running_user_id == "":
             print("load user first no id in ")
         else:
+
             plot_exercises_from_db(self.conn, self.curr_user)
             self.improvment_function()
             self.body_weights_function()
+            self.user_compare_to_avg_function()
+            self.make_monthly_report()
 
     def search_user_button_function(self):
         try:
@@ -147,7 +157,6 @@ class GUI():
                 self.multi_report_button.config(state="normal")
                 self.body_weights_button.config(state="normal")
                 self.user_compare_to_avg_button.config(state="normal")
-
 
                 self.add_personal_info_to_labels()
             else:
@@ -383,7 +392,7 @@ class GUI():
                 for rect in rects:
                     height = rect.get_height()
                     plt.annotate('{}'.format(height),
-                                 xy=(rect.get_x() + rect.get_width() / 2, height - 5),
+                                 xy=(rect.get_x() + rect.get_width() / 2, height),
                                  xytext=(offset[xpos] * 3, 3),  # use 3 points offset
                                  textcoords="offset points",  # in both directions
                                  ha=ha[xpos], va='bottom')
@@ -442,17 +451,9 @@ class GUI():
         fig.show()
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
-            pdf = matplotlib.backends.backend_pdf.PdfPages("DiagramWeights.pdf")
+            pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\DiagramWeights.pdf")
             pdf.savefig(fig)
             pdf.close()
-            file1 = PdfFileReader('DiagramWeights.pdf', "rb")
-            file2 = PdfFileReader('FullExercisesReport.pdf', "rb")
-            output = PdfFileWriter()
-            output.addPage(file1.getPage(0))
-            output.appendPagesFromReader(file2)
-            outputStream = open('MonthlyReport.pdf', "wb")
-            output.write(outputStream)
-            outputStream.close()
 
     def body_weights_function(self):
 
@@ -481,17 +482,10 @@ class GUI():
         fig.show()
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
-            pdf = matplotlib.backends.backend_pdf.PdfPages("BodyWeights.pdf")
+            pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\BodyWeights.pdf")
             pdf.savefig(fig)
             pdf.close()
-            file1 = PdfFileReader('BodyWeights.pdf', "rb")
-            file2 = PdfFileReader('MonthlyReport.pdf', "rb")
-            output = PdfFileWriter()
-            output.addPage(file1.getPage(0))
-            output.appendPagesFromReader(file2)
-            outputStream = open('MonthlyReport.pdf', "wb")
-            output.write(outputStream)
-            outputStream.close()
+
 
     def insert_benchpress_weights(self):
         cur = self.conn.cursor()
@@ -556,15 +550,15 @@ class GUI():
     def user_compare_to_avg_function(self):
         weight_to_compare = int(self.curr_user.current_weight) - (int(self.curr_user.current_weight) % 5)
         curr = self.conn.cursor()
-        if weight_to_compare<40 and self.curr_user.gender=="נקבה":
+        if weight_to_compare < 40 and self.curr_user.gender == "נקבה":
             RAISED("ERROR female weight cant be less than 40")
-        if  weight_to_compare < 50 and self.curr_user.gender == "זכר":
+        if weight_to_compare < 50 and self.curr_user.gender == "זכר":
             RAISED("ERROR MALE weight cant be less than 50")
         # BENCHPRESS
         curr.execute("SELECT * FROM BenchPress WHERE BodyWeight=? AND Gender=?",
                      (weight_to_compare, self.curr_user.gender,))
         rows = curr.fetchall()
-        fig, axs = plt.subplots(2, 2,figsize=(16,9))
+        fig, axs = plt.subplots(2, 2, figsize=(16, 9))
         if rows:
             temp_list = []
             title_list = []
@@ -596,6 +590,7 @@ class GUI():
             axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
             for i, v in enumerate(weights_list):
                 axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
+            axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # SQUAT
         curr.execute("SELECT * FROM Squat WHERE BodyWeight=? AND Gender=?", (weight_to_compare, self.curr_user.gender,))
@@ -631,6 +626,7 @@ class GUI():
             axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
             for i, v in enumerate(weights_list):
                 axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
+            axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # DEADLIFT
         curr.execute("SELECT * FROM DeadLift WHERE BodyWeight=? AND Gender=?",
@@ -668,6 +664,7 @@ class GUI():
             axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
             for i, v in enumerate(weights_list):
                 axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
+            axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # HEADPRESS
         curr.execute("SELECT * FROM HeadPress WHERE BodyWeight=? AND Gender=?",
@@ -705,5 +702,24 @@ class GUI():
             axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
             for i, v in enumerate(weights_list):
                 axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
+            axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         plt.show()
+        pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
+        pdf.savefig(fig)
+        pdf.close()
+
+    def make_monthly_report(self):
+
+        file1 = PdfFileReader('OutPuts\\CompareMySelf.pdf', "rb")
+        file2=PdfFileReader('OutPuts\\DiagramWeights.pdf',"rb")
+        file3=PdfFileReader('OutPuts\\FullExercisesReport.pdf',"rb")
+        file4=PdfFileReader('OutPuts\\BodyWeights.pdf',"rb")
+        output=PdfFileWriter()
+        output.addPage(file2.getPage(0))
+        output.addPage(file1.getPage(0))
+        output.addPage(file4.getPage(0))
+        output.appendPagesFromReader(file3)
+        outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
+        output.write(outputStream)
+        outputStream.close()

@@ -25,7 +25,7 @@ class User(object):
         self.my_exercises = defaultdict(ExerciseArray)
 
     def plot_exercise(self):
-        pdf = matplotlib.backends.backend_pdf.PdfPages("FullExercisesReport.pdf")
+        pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\FullExercisesReport.pdf")
 
         for exercise in self.my_exercises:
 
