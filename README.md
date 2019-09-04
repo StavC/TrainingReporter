@@ -11,7 +11,7 @@ TrainingReporter provides many utilites for their Trainers (such as statics on t
 
 Written in Python and SQLite3
 
-Adding Some SneakPeaks from my work so far 
+Adding Some SneakPeaks from my work so far (yea i know GUI Seems bad gotta work on it)
 
 main UI
 
