@@ -1,11 +1,15 @@
 # TrainingReporter
 
-TrainingReporter is a program that gonna receive monthly progress reports from the Coaches of WhyFitness and help them analayze their trainnes progress in the Journey to GREATNESS
-and most importanly help the trainnes keep up their motivation with details,  progress reports and comparasions to the rest of the Trainees
+TrainingReporter is a program that was built to help Trainners show their Trainne their progress and successin their Journey to GREATNESS
 
-The Programs Reads and Parse CSV Files that have all the information of the Training Program and their personal Info 
 
-Wrritten in Python and SQLite3
+the program receive monthly progress reports from the Coaches that include all the info about any of their trainne and info about their progress in the Gym Program this month(for example tester2.csv)
+
+TrainingReporter Reads and Parse the CSV Files and insert them into the DataBase that was built in SQLite3
+
+TrainingReporter provides many utilites for their Trainers (such as statics on their Trainee,more to come)and most importanly provides the Trainnes monthly report of their progess in beautiful and simple way to keep their motivation up!
+
+Written in Python and SQLite3
 
 Adding Some SneakPeaks from my work so far 
 
