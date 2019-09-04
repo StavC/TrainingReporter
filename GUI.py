@@ -88,6 +88,8 @@ class GUI():
                                                  command=self.user_compare_to_avg_function, state="disabled", height=1,
                                                  width=20)
         self.user_compare_to_avg_button.grid(column=2, row=5)
+        self.delete_exercise_button=Button(self.frame,text="מחיקת תרגיל",command=self.delete_exercise_popup,state="disabled")
+        self.delete_exercise_button.grid(column=0,row=8)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -100,6 +102,7 @@ class GUI():
         scrollbar.config(command=self.exercises_list.yview)
         self.exercises_label.grid(column=0, row=1)
         self.exercises_list.grid(column=0, row=2, rowspan=6, sticky=(W, S, N, E))
+
 
     def load_user_button_function(self):
         self.curr_user = User.read_csv_create_or_load_user()
@@ -121,6 +124,7 @@ class GUI():
         self.multi_report_button.config(state="normal")
         self.body_weights_button.config(state="normal")
         self.user_compare_to_avg_button.config(state="normal")
+        self.delete_exercise_button.config(state="normal")
 
         plot_exercises_from_db(self.conn, self.curr_user)
         self.add_personal_info_to_labels()
@@ -157,7 +161,7 @@ class GUI():
                 self.multi_report_button.config(state="normal")
                 self.body_weights_button.config(state="normal")
                 self.user_compare_to_avg_button.config(state="normal")
-
+                self.delete_exercise_button.config(state="normal")
                 self.add_personal_info_to_labels()
             else:
                 print("User doesnt exist")
@@ -168,7 +172,7 @@ class GUI():
                 self.multi_report_button.config(state="disabled")
                 self.body_weights_button.config(state="disabled")
                 self.user_compare_to_avg_button.config(state="disabled")
-
+                self.delete_exercise_button.config(state="disabled")
                 self.delete_personal_info_from_labels()
         except ValueError:
             messagebox.showerror("Error", "Enter only numbers (ID)")
@@ -177,6 +181,7 @@ class GUI():
             self.improvment_button.config(state="disabled")
             self.multi_report_button.config(state="disabled")
             self.user_compare_to_avg_button.config(state="disabled")
+            self.delete_exercise_button.config(state="disabled")
 
             self.delete_personal_info_from_labels()
             print("ValueError")
@@ -576,21 +581,22 @@ class GUI():
                 temp_list.append(temp_record)
             curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?", (self.curr_user.id, "בנץ פרס",))
             rows = curr.fetchall()
-            max_weight = max(rows)
-            temp_record = Record(max_weight[0], "אני")
-            temp_list.append(temp_record)
-            temp_list.sort(key=lambda Record: Record.weight)
-            for line in temp_list:
-                title_list.append(line.date[::-1])
-                weights_list.append(line.weight)
-            axs[0, 0].plot(title_list, weights_list, zorder=1)
-            axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-            axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-            axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס מול משקל גוף ממוצע-"[::-1])
-            axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
-            for i, v in enumerate(weights_list):
-                axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
-            axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+            if rows:
+                 max_weight = max(rows)
+                 temp_record = Record(max_weight[0], "אני")
+                 temp_list.append(temp_record)
+                 temp_list.sort(key=lambda Record: Record.weight)
+                 for line in temp_list:
+                     title_list.append(line.date[::-1])
+                     weights_list.append(line.weight)
+                 axs[0, 0].plot(title_list, weights_list, zorder=1)
+                 axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                 axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                 axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס מול משקל גוף ממוצע-"[::-1])
+                 axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                 for i, v in enumerate(weights_list):
+                     axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
+                 axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # SQUAT
         curr.execute("SELECT * FROM Squat WHERE BodyWeight=? AND Gender=?", (weight_to_compare, self.curr_user.gender,))
@@ -610,23 +616,25 @@ class GUI():
                 temp_list.append(temp_record)
                 temp_record = Record(row[5], "תחרותי")
                 temp_list.append(temp_record)
+
             curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?", (self.curr_user.id, "סקוואט",))
             rows = curr.fetchall()
-            max_weight = max(rows)
-            temp_record = Record(max_weight[0], "אני")
-            temp_list.append(temp_record)
-            temp_list.sort(key=lambda Record: Record.weight)
-            for line in temp_list:
-                title_list.append(line.date[::-1])
-                weights_list.append(line.weight)
-            axs[0, 1].plot(title_list, weights_list, zorder=1)
-            axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-            axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-            axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט מול משקל גוף ממוצע-"[::-1])
-            axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
-            for i, v in enumerate(weights_list):
-                axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
-            axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+            if rows:
+                max_weight = max(rows)
+                temp_record = Record(max_weight[0], "אני")
+                temp_list.append(temp_record)
+                temp_list.sort(key=lambda Record: Record.weight)
+                for line in temp_list:
+                    title_list.append(line.date[::-1])
+                    weights_list.append(line.weight)
+                axs[0, 1].plot(title_list, weights_list, zorder=1)
+                axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט מול משקל גוף ממוצע-"[::-1])
+                axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
+                for i, v in enumerate(weights_list):
+                    axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
+                axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # DEADLIFT
         curr.execute("SELECT * FROM DeadLift WHERE BodyWeight=? AND Gender=?",
@@ -650,21 +658,22 @@ class GUI():
             curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                          (self.curr_user.id, "דדליפט",))
             rows = curr.fetchall()
-            max_weight = max(rows)
-            temp_record = Record(max_weight[0], "אני")
-            temp_list.append(temp_record)
-            temp_list.sort(key=lambda Record: Record.weight)
-            for line in temp_list:
-                title_list.append(line.date[::-1])
-                weights_list.append(line.weight)
-            axs[1, 1].plot(title_list, weights_list, zorder=1)
-            axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-            axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-            axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט מול משקל גוף ממוצע-"[::-1])
-            axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
-            for i, v in enumerate(weights_list):
-                axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
-            axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+            if rows:
+                 max_weight = max(rows)
+                 temp_record = Record(max_weight[0], "אני")
+                 temp_list.append(temp_record)
+                 temp_list.sort(key=lambda Record: Record.weight)
+                 for line in temp_list:
+                     title_list.append(line.date[::-1])
+                     weights_list.append(line.weight)
+                 axs[1, 1].plot(title_list, weights_list, zorder=1)
+                 axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                 axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                 axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט מול משקל גוף ממוצע-"[::-1])
+                 axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
+                 for i, v in enumerate(weights_list):
+                     axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
+                 axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         # HEADPRESS
         curr.execute("SELECT * FROM HeadPress WHERE BodyWeight=? AND Gender=?",
@@ -688,21 +697,22 @@ class GUI():
             curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                          (self.curr_user.id, "הד פרס",))
             rows = curr.fetchall()
-            max_weight = max(rows)
-            temp_record = Record(max_weight[0], "אני")
-            temp_list.append(temp_record)
-            temp_list.sort(key=lambda Record: Record.weight)
-            for line in temp_list:
-                title_list.append(line.date[::-1])
-                weights_list.append(line.weight)
-            axs[1, 0].plot(title_list, weights_list, zorder=1)
-            axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-            axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-            axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
-            axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
-            for i, v in enumerate(weights_list):
-                axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
-            axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+            if rows:
+                  max_weight = max(rows)
+                  temp_record = Record(max_weight[0], "אני")
+                  temp_list.append(temp_record)
+                  temp_list.sort(key=lambda Record: Record.weight)
+                  for line in temp_list:
+                      title_list.append(line.date[::-1])
+                      weights_list.append(line.weight)
+                  axs[1, 0].plot(title_list, weights_list, zorder=1)
+                  axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                  axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                  axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
+                  axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                  for i, v in enumerate(weights_list):
+                      axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
+                  axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
 
         plt.show()
         pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
@@ -723,3 +733,40 @@ class GUI():
         outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
         output.write(outputStream)
         outputStream.close()
+
+
+    def delete_exercise_popup(self):
+        if self.exercises_list.curselection():
+            print(len(self.exercises_list.curselection()))
+            print(self.exercises_list.size())
+            if self.exercises_list.size()!=1 :
+                if self.exercises_list.size()!=len(self.exercises_list.curselection()):
+                    self.popup = Tk()
+                    frame1 = Frame(self.popup, highlightbackground="RED", highlightcolor="RED", highlightthickness=1, bd=0)
+                    frame1.pack()
+                    self.popup.overrideredirect(1)
+                    self.popup.geometry("300x75+650+400")
+                    lbl = Label(frame1, text="אתה בטוח שאתה רוצה למחוק את התרגילים ?")
+                    lbl.pack()
+                    yes_btn = Button(frame1, text="Yes", bg="light blue", fg="red", command=self.delete_exercise_function, width=10)
+                    yes_btn.pack(padx=30, pady=10, side=LEFT)
+                    no_btn = Button(frame1, text="No", bg="light blue", fg="red", command=self.popup.destroy, width=10)
+                    no_btn.pack(padx=10, pady=10, side=LEFT)
+                    self.popup.mainloop()
+                else:
+                    messagebox.showerror("Error","אי אפשר למחוק את כל התרגילים חייב שישאר אחד במינימום")
+            else:
+                messagebox.showerror("Error", "אי אפשר להשאיר משתמש בלי תרגילים תוסיפו תרגיל ואחר כך תמחקו את התרגיל הזה")
+
+    def delete_exercise_function(self):
+
+
+            selected_list = self.exercises_list.curselection()
+            curr = self.conn.cursor()
+            for i in range(0, len(selected_list)):
+                selected = self.exercises_list.get(selected_list[i])
+                curr.execute("DELETE FROM Exercises WHERE Id=? AND ExerciseName=? ",
+                             (self.curr_user.id, selected,))
+                self.conn.commit()
+            self.search_user_button_function()
+            self.popup.destroy()
