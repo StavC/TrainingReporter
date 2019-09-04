@@ -15,7 +15,7 @@ Adding Some SneakPeaks from my work so far (yea i know GUI Seems bad gotta work 
 
 main UI
 
-![alt text](https://i.imgur.com/ZCpGeQ9.png)
+![alt text](https://i.imgur.com/ynREdDs.png)
 
 Some Statics
 
