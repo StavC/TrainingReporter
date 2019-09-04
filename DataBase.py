@@ -33,8 +33,8 @@ def my_tables():
                                             Fname text NOT NULL,
                                             Lname text NOT NULL,
                                             Gender text,
-                                            Weight integer,
                                             Height integer,
+                                            Weight integer,
                                             Age integer,
                                             StartDate text,
                                             CurrentWeight
@@ -68,7 +68,41 @@ def my_tables():
                                     PRIMARY KEY(BodyWeight,Gender)
                                     );"""
 
-    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table,sql_create_benchpress_standards
+    sql_create_squat_standards = """CREATE TABLE IF NOT EXISTS Squat(
+                                        BodyWeight integer,
+                                        Beginner integer,
+                                        Novice integer,
+                                        Intermediate integer,
+                                        Advanced integer,
+                                        Elite integer,
+                                        Gender text,
+                                        PRIMARY KEY(BodyWeight,Gender)
+                                        );"""
+
+    sql_create_deadlift_standards = """CREATE TABLE IF NOT EXISTS DeadLift(
+                                        BodyWeight integer,
+                                        Beginner integer,
+                                        Novice integer,
+                                        Intermediate integer,
+                                        Advanced integer,
+                                        Elite integer,
+                                        Gender text,
+                                        PRIMARY KEY(BodyWeight,Gender)
+                                        );"""
+
+    sql_create_headpress_standards = """CREATE TABLE IF NOT EXISTS HeadPress(
+                                        BodyWeight integer,
+                                        Beginner integer,
+                                        Novice integer,
+                                        Intermediate integer,
+                                        Advanced integer,
+                                        Elite integer,
+                                        Gender text,
+                                        PRIMARY KEY(BodyWeight,Gender)
+                                        );"""
+
+
+    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table,sql_create_benchpress_standards,sql_create_squat_standards,sql_create_deadlift_standards,sql_create_headpress_standards
 
 
 

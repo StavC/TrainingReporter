@@ -37,6 +37,8 @@ class User(object):
             plt.suptitle(exercise[::-1])
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
             plt.gcf().subplots_adjust(bottom=0.20)
+            for i, v in enumerate(self.my_exercises[exercise].get_weights()):
+                ax.text(i, v + 0.02, "%d" % v, ha="center")
 
             if self.my_exercises[exercise].length() > 100:
                 fig.set_size_inches(100, 100)
