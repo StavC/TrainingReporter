@@ -10,9 +10,13 @@ Wrritten in Python and SQLite3
 Adding Some SneakPeaks from my work so far 
 
 main UI
-![alt text](https://i.imgur.com/UsCED3x.png)
+![alt text](https://i.imgur.com/ZCpGeQ9.png)
 Some Statics 
-![alt_text](https://i.imgur.com/Uzal7Xr.png)
+![alt_text](https://i.imgur.com/xx5420T.png)
+Compare yourself against World Statics for Bench Press Squat DeadLift HeadPress
+![alt_text](https://i.imgur.com/sGyYnh8.png)
+a diagram to see all exercises minium weight and maximum weight (to see how you growed)
+![alt_text](https://i.imgur.com/ca6muMa.png)
 Starting to build out the monthly reports in PDF Format
 ![alt_text](https://i.imgur.com/4cole6z.png)
 
