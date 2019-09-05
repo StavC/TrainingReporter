@@ -1,3 +1,4 @@
+
 from tkinter import *
 from tkinter import messagebox
 from tkinter import Scrollbar
@@ -9,6 +10,9 @@ import matplotlib.backends.backend_pdf
 import numpy as np
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import inspect
+from fpdf import FPDF
+FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
+
 
 
 class GUI():
@@ -721,6 +725,21 @@ class GUI():
 
     def make_monthly_report(self):
 
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.add_font('DejaVu', '', 'Fonts\\arial.ttf', uni=True)
+        pdf.set_font("DejaVu",'', size=15)
+        welcome=f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
+        pdf.cell(200, 10, txt=welcome, ln=1, align="C")
+        pdf.image('Inputs\\YardenKissing.jpg', x=None, y=None,w=190, h=100, type='', link='')
+        pdf.ln(h='200')
+        pdf.ln(h='200')
+        #pdf.line(0, 130, 300, 130)
+        details=f" משקל כרגע: {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name}"[::-1]
+        pdf.multi_cell(200,10,txt=details,align="R")
+        pdf.output("simple_demo.pdf")
+
+
         file1 = PdfFileReader('OutPuts\\CompareMySelf.pdf', "rb")
         file2=PdfFileReader('OutPuts\\DiagramWeights.pdf',"rb")
         file3=PdfFileReader('OutPuts\\FullExercisesReport.pdf',"rb")
@@ -733,6 +752,7 @@ class GUI():
         outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
         output.write(outputStream)
         outputStream.close()
+
 
 
     def delete_exercise_popup(self):
