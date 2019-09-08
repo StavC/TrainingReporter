@@ -1,17 +1,23 @@
 import calendar
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import inspect
+import matplotlib.backends.backend_pdf
 
 calendar.setfirstweekday(6) # Sunday is 1st day in US
-w_days = 'Sun Mon Tue Wed Thu Fri Sat'.split()
+w_days = 'ןושאר ינש ישילש יעיבר ישימח ישיש תבש'.split()
 m_names = '''
-January February March April
-May June July August
-September October November December'''.split()
+ראוני ראורבפ ץרמ לירפא
+יאמ ינוי ילוי טסוגוא
+רבמטפס רבוטקוא רמבונ רבמצד'''.split()
+
+
 
 class MplCalendar(object):
     def __init__(self, year, month):
         self.year = year
         self.month = month
+        self.img=mpimg.imread("Inputs\\V.png")
         self.cal = calendar.monthcalendar(year, month)
         # monthcalendar creates a list of lists for each week
         # Save the events data in the same format
@@ -34,9 +40,10 @@ class MplCalendar(object):
         week, w_day = self._monthday_to_index(day)
         self.events[week][w_day].append(event_str)
 
+
     def show(self):
         'create the calendar'
-        f, axs = plt.subplots(len(self.cal), 7, sharex=True, sharey=True)
+        f, axs = plt.subplots(len(self.cal), 7, sharex=True, sharey=True,figsize=(8,7))
         for week, ax_row in enumerate(axs):
             for week_day, ax in enumerate(ax_row):
                 ax.set_xticks([])
@@ -47,10 +54,13 @@ class MplCalendar(object):
                             verticalalignment='top',
                             horizontalalignment='left')
                 contents = "\n".join(self.events[week][week_day])
+
                 ax.text(.03, .85, contents,
                         verticalalignment='top',
                         horizontalalignment='left',
                         fontsize=9)
+                if contents == "'":
+                    ax.imshow(self.img,aspect='auto',interpolation='nearest')
 
         # use the titles of the first row as the weekdays
         for n, day in enumerate(w_days):
@@ -61,4 +71,7 @@ class MplCalendar(object):
         f.subplots_adjust(wspace=0)
         f.suptitle(m_names[self.month-1] + ' ' + str(self.year),
                    fontsize=20, fontweight='bold')
-        plt.show()
+
+        f.savefig('OutPuts\\Calander.png')
+        plt.close(f)
+

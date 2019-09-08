@@ -139,12 +139,13 @@ class GUI():
         if self.running_user_id == "":
             print("load user first no id in ")
         else:
-
+            self.create_calendar_function()
             plot_exercises_from_db(self.conn, self.curr_user)
             self.improvment_function()
             self.body_weights_function()
             self.user_compare_to_avg_function()
             self.make_monthly_report()
+
 
     def search_user_button_function(self):
         try:
@@ -863,7 +864,7 @@ class GUI():
         pdf.set_font("DejaVu", '', size=15)
         welcome = f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
         pdf.cell(200, 10, txt=welcome, ln=1, align="C")
-        pdf.image('Inputs\\WhyFitness.jpg', x=None, y=None, w=190, h=100, type='', link='')
+        pdf.image('Inputs\\WhyFitness.jpg', x=None, y=None, w=190, h=80, type='', link='')
         pdf.ln(h='200')
         pdf.ln(h='200')
         curr=self.conn.cursor()
@@ -873,6 +874,8 @@ class GUI():
         # pdf.line(0, 130, 300, 130)
         details = f" משקל כרגע:  {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name} \n חודש מספר: {str(rows[0][0])[::-1]}"[
                   ::-1]
+        pdf.image('OutPuts\\Calander.png', x=0, y=130, w=150, h=140, type='', link='')
+
         pdf.multi_cell(200, 10, txt=details, align="R")
         pdf.output("OutPuts\\Front.pdf")
 
@@ -892,7 +895,6 @@ class GUI():
         outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
         output.write(outputStream)
         outputStream.close()
-        self.create_calendar_function()
 
     def delete_exercise_popup(self):
         if self.exercises_list.curselection():
@@ -938,8 +940,6 @@ class GUI():
         current_month=datetime.now().month
         months_to_add_0=[1,2,3,4,5,6,7,8,9]
 
-
-
         cal = MplCalendar(current_year, 8)
         curr=self.conn.cursor()
         curr.execute("SELECT DISTINCT(Date) FROM Exercises WHERE Id=?",(self.curr_user.id,))
@@ -951,14 +951,12 @@ class GUI():
                   day=datetime.strptime(row[0],'%d/%m/%Y').strftime('%d')
                   if day.startswith("0"):
                       day=day[1::]
-                  print(day)
-                  cal.add_event(day,"DID IT!")
+                  cal.add_event(day,"'")
             else:
                 if datetime.strptime(row[0], '%d/%m/%Y').strftime('%m') == str(current_month):
                     if datetime.strptime(row[0], '%d/%m/%Y').strftime('%Y') == str(current_year):
                         day = datetime.strptime(row[0], '%d/%m/%Y').strftime('%d')
                         if day.startswith("0"):
                             day = day[1::]
-                        print(day)
-                        cal.add_event(day, "DID IT!")
+                        cal.add_event(day, "'")
         cal.show()
