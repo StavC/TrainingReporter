@@ -3,6 +3,8 @@ import json
 from DataBase import *
 from random import randint
 from GUI import *
+from GUI import  GUI
+from Calendar import  MplCalendar
 
 #todo fix CSV BUGS of look
 def main():

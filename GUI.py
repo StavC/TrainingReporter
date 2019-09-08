@@ -1,4 +1,3 @@
-
 from tkinter import *
 from tkinter import messagebox
 from tkinter import Scrollbar
@@ -11,6 +10,8 @@ import numpy as np
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import inspect
 from fpdf import FPDF
+from datetime import datetime
+from Calendar import  MplCalendar
 FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
 
 
@@ -92,8 +93,9 @@ class GUI():
                                                  command=self.user_compare_to_avg_function, state="disabled", height=1,
                                                  width=20)
         self.user_compare_to_avg_button.grid(column=2, row=5)
-        self.delete_exercise_button=Button(self.frame,text="מחיקת תרגיל",command=self.delete_exercise_popup,state="disabled")
-        self.delete_exercise_button.grid(column=0,row=8)
+        self.delete_exercise_button = Button(self.frame, text="מחיקת תרגיל", command=self.delete_exercise_popup,
+                                             state="disabled")
+        self.delete_exercise_button.grid(column=0, row=8)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -106,7 +108,6 @@ class GUI():
         scrollbar.config(command=self.exercises_list.yview)
         self.exercises_label.grid(column=0, row=1)
         self.exercises_list.grid(column=0, row=2, rowspan=6, sticky=(W, S, N, E))
-
 
     def load_user_button_function(self):
         self.curr_user = User.read_csv_create_or_load_user()
@@ -447,7 +448,7 @@ class GUI():
         width = 0.35
         fig, ax = plt.subplots()
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
-        plt.gcf().subplots_adjust(bottom=0.30)
+        plt.gcf().subplots_adjust(bottom=0.20)
         p1 = plt.bar(ind, min_list, width, color="blue")
         p2 = plt.bar(ind, max_list, width, bottom=min_list, color="cornflowerblue")
 
@@ -494,15 +495,14 @@ class GUI():
         for i, v in enumerate(weights_list):
             ax.text(i, v + 0.02, "%d" % v, ha="center")
 
-
-        if inspect.stack()[1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
+        if inspect.stack()[
+            1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\BodyWeights.pdf")
             pdf.savefig(fig)
             plt.close(fig)
             pdf.close()
         else:
             fig.show()
-
 
     def insert_benchpress_weights(self):
         cur = self.conn.cursor()
@@ -592,34 +592,35 @@ class GUI():
                 temp_record = Record(row[5], "תחרותי")
                 temp_list.append(temp_record)
 
-            curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?", (self.curr_user.id, "בנץ פרס רמ1",))
+            curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
+                         (self.curr_user.id, "בנץ פרס רמ1",))
             rows = curr.fetchall()
             if rows:
-                 max_weight = max(rows)
-                 temp_record = Record(max_weight[0], "אני")
-                 temp_list.append(temp_record)
-                 temp_list.sort(key=lambda Record: Record.weight)
-                 for line in temp_list:
-                     title_list.append(line.date[::-1])
-                     weights_list.append(line.weight)
-                 axs[0, 0].plot(title_list, weights_list, zorder=1)
-                 axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                 axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                 axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1])
-                 axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
-                 for i, v in enumerate(weights_list):
-                     axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
-                 axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                max_weight = max(rows)
+                temp_record = Record(max_weight[0], "אני")
+                temp_list.append(temp_record)
+                temp_list.sort(key=lambda Record: Record.weight)
+                for line in temp_list:
+                    title_list.append(line.date[::-1])
+                    weights_list.append(line.weight)
+                axs[0, 0].plot(title_list, weights_list, zorder=1)
+                axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1])
+                axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                for i, v in enumerate(weights_list):
+                    axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
+                axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "בנץ פרס",))
                 rows = curr.fetchall()
                 if rows:
                     max_weight = max(rows)
-                    temp_list2=[]
-                    for i in range(0,len(temp_list)):
-                        temp_record=temp_list.pop()
-                        temp_record.weight=temp_record.weight*0.84
+                    temp_list2 = []
+                    for i in range(0, len(temp_list)):
+                        temp_record = temp_list.pop()
+                        temp_record.weight = temp_record.weight * 0.84
                         temp_list2.append(temp_record)
 
                     temp_record = Record(max_weight[0], "אני")
@@ -659,7 +660,8 @@ class GUI():
                 temp_record = Record(row[5], "תחרותי")
                 temp_list.append(temp_record)
 
-            curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?", (self.curr_user.id, "סקוואט רמ1",))
+            curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
+                         (self.curr_user.id, "סקוואט רמ1",))
             rows = curr.fetchall()
             if rows:
 
@@ -685,7 +687,7 @@ class GUI():
                 if rows:
                     max_weight = max(rows)
                     temp_list2 = []
-                    for i in range(0,len(temp_list)):
+                    for i in range(0, len(temp_list)):
                         temp_record = temp_list.pop()
                         temp_record.weight = temp_record.weight * 0.84
                         temp_list2.append(temp_record)
@@ -731,29 +733,29 @@ class GUI():
                          (self.curr_user.id, "דדליפט רמ1",))
             rows = curr.fetchall()
             if rows:
-                 max_weight = max(rows)
-                 temp_record = Record(max_weight[0], "אני")
-                 temp_list.append(temp_record)
-                 temp_list.sort(key=lambda Record: Record.weight)
-                 for line in temp_list:
-                     title_list.append(line.date[::-1])
-                     weights_list.append(line.weight)
-                 axs[1, 1].plot(title_list, weights_list, zorder=1)
-                 axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                 axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                 axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1])
-                 axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
-                 for i, v in enumerate(weights_list):
-                     axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
-                 axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                max_weight = max(rows)
+                temp_record = Record(max_weight[0], "אני")
+                temp_list.append(temp_record)
+                temp_list.sort(key=lambda Record: Record.weight)
+                for line in temp_list:
+                    title_list.append(line.date[::-1])
+                    weights_list.append(line.weight)
+                axs[1, 1].plot(title_list, weights_list, zorder=1)
+                axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1])
+                axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
+                for i, v in enumerate(weights_list):
+                    axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
+                axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "דדליפט",))
-                rows=curr.fetchall()
+                rows = curr.fetchall()
                 if rows:
                     max_weight = max(rows)
                     temp_list2 = []
-                    for i in range(0,len(temp_list)):
+                    for i in range(0, len(temp_list)):
                         temp_record = temp_list.pop()
                         temp_record.weight = temp_record.weight * 0.84
                         temp_list2.append(temp_record)
@@ -800,21 +802,21 @@ class GUI():
                          (self.curr_user.id, "הד פרס רמ1",))
             rows = curr.fetchall()
             if rows:
-                  max_weight = max(rows)
-                  temp_record = Record(max_weight[0], "אני")
-                  temp_list.append(temp_record)
-                  temp_list.sort(key=lambda Record: Record.weight)
-                  for line in temp_list:
-                      title_list.append(line.date[::-1])
-                      weights_list.append(line.weight)
-                  axs[1, 0].plot(title_list, weights_list, zorder=1)
-                  axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                  axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                  axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
-                  axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
-                  for i, v in enumerate(weights_list):
-                      axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
-                  axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                max_weight = max(rows)
+                temp_record = Record(max_weight[0], "אני")
+                temp_list.append(temp_record)
+                temp_list.sort(key=lambda Record: Record.weight)
+                for line in temp_list:
+                    title_list.append(line.date[::-1])
+                    weights_list.append(line.weight)
+                axs[1, 0].plot(title_list, weights_list, zorder=1)
+                axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
+                axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
+                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
+                axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                for i, v in enumerate(weights_list):
+                    axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
+                axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "הד פרס",))
@@ -822,7 +824,7 @@ class GUI():
                 if rows:
                     max_weight = max(rows)
                     temp_list2 = []
-                    for i in range(0,len(temp_list)):
+                    for i in range(0, len(temp_list)):
                         temp_record = temp_list.pop()
                         temp_record.weight = temp_record.weight * 0.84
                         temp_list2.append(temp_record)
@@ -841,37 +843,48 @@ class GUI():
                         axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
                 else:
-                    axs[1,0].text(0.5, 0.5, 'אינך עושה הד פרס כרגע'[::-1], horizontalalignment='center',   verticalalignment='center',bbox=dict(facecolor='red', alpha=0.5))
+                    axs[1, 0].text(0.5, 0.5, 'אינך עושה הד פרס כרגע'[::-1], horizontalalignment='center',
+                                   verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
 
-        if inspect.stack()[1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
-             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
-             pdf.savefig(fig)
-             plt.close(fig)
-             pdf.close()
+        if inspect.stack()[
+            1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
+            pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
+            pdf.savefig(fig)
+            plt.close(fig)
+            pdf.close()
         else:
             fig.show()
+
     def make_monthly_report(self):
 
         pdf = FPDF()
         pdf.add_page()
         pdf.add_font('DejaVu', '', 'Fonts\\arial.ttf', uni=True)
-        pdf.set_font("DejaVu",'', size=15)
-        welcome=f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
+        pdf.set_font("DejaVu", '', size=15)
+        welcome = f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
         pdf.cell(200, 10, txt=welcome, ln=1, align="C")
-        pdf.image('Inputs\\YardenKissing.jpg', x=None, y=None,w=190, h=100, type='', link='')
+        pdf.image('Inputs\\WhyFitness.jpg', x=None, y=None, w=190, h=100, type='', link='')
         pdf.ln(h='200')
-        pdf.ln(h='200')  
-        #pdf.line(0, 130, 300, 130)
-        details=f" משקל כרגע: {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name}"[::-1]
-        pdf.multi_cell(200,10,txt=details,align="R")
-        pdf.output("simple_demo.pdf")
+        pdf.ln(h='200')
+        curr=self.conn.cursor()
+        curr.execute("SELECT COUNT(Id) FROM BodyWeights WHERE Id=?", (self.curr_user.id,))
+
+        rows=curr.fetchall()
+        # pdf.line(0, 130, 300, 130)
+        details = f" משקל כרגע:  {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name} \n חודש מספר: {str(rows[0][0])[::-1]}"[
+                  ::-1]
+        pdf.multi_cell(200, 10, txt=details, align="R")
+        pdf.output("OutPuts\\Front.pdf")
 
 
+        file0=PdfFileReader('OutPuts\\Front.pdf',"rb")
         file1 = PdfFileReader('OutPuts\\CompareMySelf.pdf', "rb")
-        file2=PdfFileReader('OutPuts\\DiagramWeights.pdf',"rb")
-        file3=PdfFileReader('OutPuts\\FullExercisesReport.pdf',"rb")
-        file4=PdfFileReader('OutPuts\\BodyWeights.pdf',"rb")
-        output=PdfFileWriter()
+        file2 = PdfFileReader('OutPuts\\DiagramWeights.pdf', "rb")
+        file3 = PdfFileReader('OutPuts\\FullExercisesReport.pdf', "rb")
+        file4 = PdfFileReader('OutPuts\\BodyWeights.pdf', "rb")
+
+        output = PdfFileWriter()
+        output.addPage(file0.getPage(0))
         output.addPage(file2.getPage(0))
         output.addPage(file1.getPage(0))
         output.addPage(file4.getPage(0))
@@ -879,41 +892,73 @@ class GUI():
         outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
         output.write(outputStream)
         outputStream.close()
-
-
+        self.create_calendar_function()
 
     def delete_exercise_popup(self):
         if self.exercises_list.curselection():
             print(len(self.exercises_list.curselection()))
             print(self.exercises_list.size())
-            if self.exercises_list.size()!=1 :
-                if self.exercises_list.size()!=len(self.exercises_list.curselection()):
+            if self.exercises_list.size() != 1:
+                if self.exercises_list.size() != len(self.exercises_list.curselection()):
                     self.popup = Tk()
-                    frame1 = Frame(self.popup, highlightbackground="RED", highlightcolor="RED", highlightthickness=1, bd=0)
+                    frame1 = Frame(self.popup, highlightbackground="RED", highlightcolor="RED", highlightthickness=1,
+                                   bd=0)
                     frame1.pack()
                     self.popup.overrideredirect(1)
                     self.popup.geometry("300x75+650+400")
                     lbl = Label(frame1, text="אתה בטוח שאתה רוצה למחוק את התרגילים ?")
                     lbl.pack()
-                    yes_btn = Button(frame1, text="Yes", bg="light blue", fg="red", command=self.delete_exercise_function, width=10)
+                    yes_btn = Button(frame1, text="Yes", bg="light blue", fg="red",
+                                     command=self.delete_exercise_function, width=10)
                     yes_btn.pack(padx=30, pady=10, side=LEFT)
                     no_btn = Button(frame1, text="No", bg="light blue", fg="red", command=self.popup.destroy, width=10)
                     no_btn.pack(padx=10, pady=10, side=LEFT)
                     self.popup.mainloop()
                 else:
-                    messagebox.showerror("Error","אי אפשר למחוק את כל התרגילים חייב שישאר אחד במינימום")
+                    messagebox.showerror("Error", "אי אפשר למחוק את כל התרגילים חייב שישאר אחד במינימום")
             else:
-                messagebox.showerror("Error", "אי אפשר להשאיר משתמש בלי תרגילים תוסיפו תרגיל ואחר כך תמחקו את התרגיל הזה")
+                messagebox.showerror("Error",
+                                     "אי אפשר להשאיר משתמש בלי תרגילים תוסיפו תרגיל ואחר כך תמחקו את התרגיל הזה")
 
     def delete_exercise_function(self):
 
+        selected_list = self.exercises_list.curselection()
+        curr = self.conn.cursor()
+        for i in range(0, len(selected_list)):
+            selected = self.exercises_list.get(selected_list[i])
+            curr.execute("DELETE FROM Exercises WHERE Id=? AND ExerciseName=? ",
+                         (self.curr_user.id, selected,))
+            self.conn.commit()
+        self.search_user_button_function()
+        self.popup.destroy()
 
-            selected_list = self.exercises_list.curselection()
-            curr = self.conn.cursor()
-            for i in range(0, len(selected_list)):
-                selected = self.exercises_list.get(selected_list[i])
-                curr.execute("DELETE FROM Exercises WHERE Id=? AND ExerciseName=? ",
-                             (self.curr_user.id, selected,))
-                self.conn.commit()
-            self.search_user_button_function()
-            self.popup.destroy()
+    def create_calendar_function(self):
+
+        current_year=datetime.now().year
+        current_month=datetime.now().month
+        months_to_add_0=[1,2,3,4,5,6,7,8,9]
+
+
+
+        cal = MplCalendar(current_year, 8)
+        curr=self.conn.cursor()
+        curr.execute("SELECT DISTINCT(Date) FROM Exercises WHERE Id=?",(self.curr_user.id,))
+        rows = curr.fetchall()
+        for row in rows:
+            if current_month in months_to_add_0:
+             if datetime.strptime(row[0],'%d/%m/%Y').strftime('%m')=="0"+str(8) :
+                if datetime.strptime(row[0],'%d/%m/%Y').strftime('%Y')==str(current_year):
+                  day=datetime.strptime(row[0],'%d/%m/%Y').strftime('%d')
+                  if day.startswith("0"):
+                      day=day[1::]
+                  print(day)
+                  cal.add_event(day,"DID IT!")
+            else:
+                if datetime.strptime(row[0], '%d/%m/%Y').strftime('%m') == str(current_month):
+                    if datetime.strptime(row[0], '%d/%m/%Y').strftime('%Y') == str(current_year):
+                        day = datetime.strptime(row[0], '%d/%m/%Y').strftime('%d')
+                        if day.startswith("0"):
+                            day = day[1::]
+                        print(day)
+                        cal.add_event(day, "DID IT!")
+        cal.show()
