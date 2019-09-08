@@ -67,9 +67,10 @@ class User(object):
 
             elif self.my_exercises[exercise].length() > 20:
                 fig.set_size_inches(20, 20)
-            fig.show()
+            #fig.show()
 
             pdf.savefig(fig)
+            plt.close(fig)
 
 
 
