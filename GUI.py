@@ -636,6 +636,9 @@ class GUI():
                     for i, v in enumerate(weights_list):
                         axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                else:
+                    axs[0, 0].text(0.5, 0.5, 'אינך עושה בנץ פרס כרגע'[::-1], horizontalalignment='center',
+                                   verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
 
         # SQUAT
         curr.execute("SELECT * FROM Squat WHERE BodyWeight=? AND Gender=?", (weight_to_compare, self.curr_user.gender,))
@@ -670,7 +673,7 @@ class GUI():
                 axs[0, 1].plot(title_list, weights_list, zorder=1)
                 axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                 axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 1רמ מול משקל גוף ממוצע-"[::-1])
+                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1])
                 axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
                 for i, v in enumerate(weights_list):
                     axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
@@ -700,6 +703,9 @@ class GUI():
                     for i, v in enumerate(weights_list):
                         axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                else:
+                    axs[0, 1].text(0.5, 0.5, 'אינך עושה סקוואט כרגע'[::-1], horizontalalignment='center',
+                                   verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
 
         # DEADLIFT
         curr.execute("SELECT * FROM DeadLift WHERE BodyWeight=? AND Gender=?",
@@ -766,6 +772,9 @@ class GUI():
                     for i, v in enumerate(weights_list):
                         axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                else:
+                    axs[1, 1].text(0.5, 0.5, 'אינך עושה דדליפט כרגע'[::-1], horizontalalignment='center',
+                                   verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
 
         # HEADPRESS
         curr.execute("SELECT * FROM HeadPress WHERE BodyWeight=? AND Gender=?",
@@ -831,7 +840,8 @@ class GUI():
                     for i, v in enumerate(weights_list):
                         axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
-
+                else:
+                    axs[1,0].text(0.5, 0.5, 'אינך עושה הד פרס כרגע'[::-1], horizontalalignment='center',   verticalalignment='center',bbox=dict(facecolor='red', alpha=0.5))
 
         if inspect.stack()[1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
              pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
