@@ -34,7 +34,8 @@ class User(object):
             plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
             plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=10,
                         color='red', zorder=2)
-            plt.suptitle(exercise[::-1])
+            plt.suptitle(exercise[::-1],fontsize=20)
+
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
             plt.gcf().subplots_adjust(bottom=0.20)
             for i, v in enumerate(self.my_exercises[exercise].get_weights()):
@@ -69,7 +70,7 @@ class User(object):
                 fig.set_size_inches(20, 20)
             #fig.show()
 
-            pdf.savefig(fig)
+            pdf.savefig(fig,facecolor='gainsboro')
             plt.close(fig)
 
 

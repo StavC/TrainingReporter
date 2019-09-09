@@ -139,14 +139,55 @@ class GUI():
         if self.running_user_id == "":
             print("load user first no id in ")
         else:
+            plt.style.use("default")
             self.create_calendar_function()
+            plt.style.use("seaborn")
             plot_exercises_from_db(self.conn, self.curr_user)
             self.improvment_function()
             self.body_weights_function()
             self.user_compare_to_avg_function()
             self.make_monthly_report()
 
+    def make_monthly_report(self):
 
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
+        pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
+        pdf.set_font("Abraham-Regular", '', size=20)
+        welcome = f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
+        pdf.cell(200, 10, txt=welcome, ln=1, align="C")
+        pdf.image('Inputs\\WhyFitness.jpg', x=None, y=None, w=190, h=80, type='', link='')
+        pdf.ln(h='200')
+        pdf.ln(h='200')
+        curr = self.conn.cursor()
+        curr.execute("SELECT COUNT(Id) FROM BodyWeights WHERE Id=?", (self.curr_user.id,))
+
+        rows = curr.fetchall()
+        # pdf.line(0, 130, 300, 130)
+        pdf.set_font("Abraham-Regular", '', size=15)
+        details = f" משקל כרגע:  {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name} \n חודש מספר: {str(rows[0][0])[::-1]}"[
+                  ::-1]
+        pdf.image('OutPuts\\Calander.png', x=0, y=130, w=150, h=140, type='', link='')
+        pdf.image('Inputs\\BeastMode.jpg', x=150, y=230, w=60, h=60, type='', link='')
+        pdf.multi_cell(200, 10, txt=details, align="R")
+        pdf.output("OutPuts\\Front.pdf")
+
+        file0 = PdfFileReader('OutPuts\\Front.pdf', "rb")
+        file1 = PdfFileReader('OutPuts\\CompareMySelf.pdf', "rb")
+        file2 = PdfFileReader('OutPuts\\DiagramWeights.pdf', "rb")
+        file3 = PdfFileReader('OutPuts\\FullExercisesReport.pdf', "rb")
+        file4 = PdfFileReader('OutPuts\\BodyWeights.pdf', "rb")
+
+        output = PdfFileWriter()
+        output.addPage(file0.getPage(0))
+        output.addPage(file2.getPage(0))
+        output.addPage(file1.getPage(0))
+        output.addPage(file4.getPage(0))
+        output.appendPagesFromReader(file3)
+        outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
+        output.write(outputStream)
+        outputStream.close()
     def search_user_button_function(self):
         try:
             input_from_search_field = int(self.search.get())
@@ -271,7 +312,7 @@ class GUI():
                 plt.plot(dates_list, weights_list, zorder=1)
                 plt.scatter(dates_list, weights_list, s=10,
                             color='red', zorder=2)
-                plt.suptitle(selected[::-1])
+                plt.suptitle(selected[::-1],fontsize=20)
                 plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
                 plt.gcf().subplots_adjust(bottom=0.20)
                 for i, v in enumerate(weights_list):
@@ -454,7 +495,7 @@ class GUI():
         p2 = plt.bar(ind, max_list, width, bottom=min_list, color="cornflowerblue")
 
         plt.ylabel('משקלים'[::-1])
-        plt.title('שיפור במשקל לפי תרגיל'[::-1])
+        plt.title('שיפור במשקל לפי תרגיל'[::-1],fontsize=20)
         plt.xticks(ind, exercises_list_for_min_max)
         totalmax = ((max(max_list)) + (max(min_list)))
         plt.yticks(np.arange(0, totalmax + 20, 10))
@@ -465,7 +506,7 @@ class GUI():
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\DiagramWeights.pdf")
-            pdf.savefig(fig)
+            pdf.savefig(fig,facecolor='gainsboro')
             plt.close(fig)
             pdf.close()
         else:
@@ -490,7 +531,7 @@ class GUI():
         plt.plot(dates_list, weights_list, zorder=1)
         plt.scatter(dates_list, weights_list, s=10,
                     color='red', zorder=2)
-        plt.suptitle("משקל גוף"[::-1])
+        plt.suptitle(" מעקב משקל גוף"[::-1],fontsize=20)
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
         plt.gcf().subplots_adjust(bottom=0.20)
         for i, v in enumerate(weights_list):
@@ -499,7 +540,7 @@ class GUI():
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\BodyWeights.pdf")
-            pdf.savefig(fig)
+            pdf.savefig(fig,facecolor='gainsboro')
             plt.close(fig)
             pdf.close()
         else:
@@ -607,8 +648,8 @@ class GUI():
                 axs[0, 0].plot(title_list, weights_list, zorder=1)
                 axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                 axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1])
-                axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
                 axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -633,8 +674,8 @@ class GUI():
                     axs[0, 0].plot(title_list, weights_list, zorder=1)
                     axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                     axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1])
-                    axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -676,8 +717,8 @@ class GUI():
                 axs[0, 1].plot(title_list, weights_list, zorder=1)
                 axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                 axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1])
-                axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
+                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                 axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -701,8 +742,8 @@ class GUI():
                     axs[0, 1].plot(title_list, weights_list, zorder=1)
                     axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                     axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1])
-                    axs[0, 1].set(ylabel='משקל סקוואט'[::-1], xlabel="רמת מתאמן"[::-1])
+                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -744,8 +785,8 @@ class GUI():
                 axs[1, 1].plot(title_list, weights_list, zorder=1)
                 axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                 axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1])
-                axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
+                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
                 axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -770,8 +811,8 @@ class GUI():
                     axs[1, 1].plot(title_list, weights_list, zorder=1)
                     axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                     axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1])
-                    axs[1, 1].set(ylabel='משקל דדליפט'[::-1], xlabel="רמת מתאמן"[::-1])
+                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -813,8 +854,8 @@ class GUI():
                 axs[1, 0].plot(title_list, weights_list, zorder=1)
                 axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                 axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
-                axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                 axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -838,8 +879,8 @@ class GUI():
                     axs[1, 0].plot(title_list, weights_list, zorder=1)
                     axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
                     axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1])
-                    axs[1, 0].set(ylabel='משקל הד פרס'[::-1], xlabel="רמת מתאמן"[::-1])
+                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -850,51 +891,11 @@ class GUI():
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
-            pdf.savefig(fig)
+            pdf.savefig(fig,facecolor='gainsboro')
             plt.close(fig)
             pdf.close()
         else:
             fig.show()
-
-    def make_monthly_report(self):
-
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.add_font('DejaVu', '', 'Fonts\\arial.ttf', uni=True)
-        pdf.set_font("DejaVu", '', size=15)
-        welcome = f" ברוך הבא לדוח החודשי {self.curr_user.first_name} {self.curr_user.last_name}!"[::-1]
-        pdf.cell(200, 10, txt=welcome, ln=1, align="C")
-        pdf.image('Inputs\\WhyFitness.jpg', x=None, y=None, w=190, h=80, type='', link='')
-        pdf.ln(h='200')
-        pdf.ln(h='200')
-        curr=self.conn.cursor()
-        curr.execute("SELECT COUNT(Id) FROM BodyWeights WHERE Id=?", (self.curr_user.id,))
-
-        rows=curr.fetchall()
-        # pdf.line(0, 130, 300, 130)
-        details = f" משקל כרגע:  {str(self.curr_user.current_weight)[::-1]} \n תאריך התחלה: {str(self.curr_user.start_date)[::-1]} \n גיל: {str(self.curr_user.age)[::-1]} \n מין: {self.curr_user.gender} \n משקל התחלה: {str(self.curr_user.weight)[::-1]} \n גובה: {str(self.curr_user.height)[::-1]} \n מספר זהות: {str(self.curr_user.id)[::-1]} \n שם משפחה: {self.curr_user.last_name} \n שם פרטי: {self.curr_user.first_name} \n חודש מספר: {str(rows[0][0])[::-1]}"[
-                  ::-1]
-        pdf.image('OutPuts\\Calander.png', x=0, y=130, w=150, h=140, type='', link='')
-
-        pdf.multi_cell(200, 10, txt=details, align="R")
-        pdf.output("OutPuts\\Front.pdf")
-
-
-        file0=PdfFileReader('OutPuts\\Front.pdf',"rb")
-        file1 = PdfFileReader('OutPuts\\CompareMySelf.pdf', "rb")
-        file2 = PdfFileReader('OutPuts\\DiagramWeights.pdf', "rb")
-        file3 = PdfFileReader('OutPuts\\FullExercisesReport.pdf', "rb")
-        file4 = PdfFileReader('OutPuts\\BodyWeights.pdf', "rb")
-
-        output = PdfFileWriter()
-        output.addPage(file0.getPage(0))
-        output.addPage(file2.getPage(0))
-        output.addPage(file1.getPage(0))
-        output.addPage(file4.getPage(0))
-        output.appendPagesFromReader(file3)
-        outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
-        output.write(outputStream)
-        outputStream.close()
 
     def delete_exercise_popup(self):
         if self.exercises_list.curselection():
@@ -935,7 +936,6 @@ class GUI():
         self.popup.destroy()
 
     def create_calendar_function(self):
-
         current_year=datetime.now().year
         current_month=datetime.now().month
         months_to_add_0=[1,2,3,4,5,6,7,8,9]
