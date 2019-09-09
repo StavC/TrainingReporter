@@ -57,6 +57,15 @@ def my_tables():
                                     FOREIGN KEY (Id) REFERENCES Users (Id)
                                     );"""
 
+    sql_create_targets = """CREATE TABLE IF NOT EXISTS Targets(
+                                Id integer,
+                                WeightTarget integer,
+                                Description text,
+                                PRIMARY KEY(Id,Description)
+                                FOREIGN KEY (Id) REFERENCES Users (Id)
+                                
+                                """
+
     sql_create_benchpress_standards="""CREATE TABLE IF NOT EXISTS BenchPress(
                                     BodyWeight integer,
                                     Beginner integer,
@@ -102,7 +111,8 @@ def my_tables():
                                         );"""
 
 
-    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table,sql_create_benchpress_standards,sql_create_squat_standards,sql_create_deadlift_standards,sql_create_headpress_standards
+
+    return sql_create_users_table, sql_create_exercises_table,sql_create_body_weights_table,sql_create_benchpress_standards,sql_create_squat_standards,sql_create_deadlift_standards,sql_create_headpress_standards,sql_create_targets
 
 
 

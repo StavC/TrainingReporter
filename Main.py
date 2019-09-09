@@ -9,7 +9,7 @@ from Calendar import  MplCalendar
 #todo fix CSV BUGS of look
 def main():
     conn = create_connection("D:\SQLlite\\UsersData.db")
-    users_table, exercises_table,body_weights_table,benchpress_standards,squat_standards,deadlift_standards,headpress_standards = my_tables()
+    users_table, exercises_table,body_weights_table,benchpress_standards,squat_standards,deadlift_standards,headpress_standards,targets_table = my_tables()
     create_table(conn, users_table)
     create_table(conn, exercises_table)
     create_table(conn,body_weights_table)
@@ -17,6 +17,7 @@ def main():
     create_table(conn,squat_standards)
     create_table(conn,deadlift_standards)
     create_table(conn,headpress_standards)
+    create_table(conn,targets_table)
 
     root= Tk()
     gui = GUI(root)
