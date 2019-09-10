@@ -1,6 +1,6 @@
 # TrainingReporter
 
-TrainingReporter is a program that was built to help Trainners show their Trainne their progress and successin their Journey to GREATNESS
+TrainingReporter is a program that was built to help Trainners show their Trainne the progress and success in their Journey to GREATNESS
 
 
 the program receive monthly progress reports from the Coaches that include all the info about any of their trainne and info about their progress in the Gym Program this month(for example tester2.csv)
