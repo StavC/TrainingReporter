@@ -61,6 +61,9 @@ def my_tables():
                                 Id integer,
                                 WeightTarget integer,
                                 Description text,
+                                Status text,
+                                StartingDate text,
+                                FinishedDate text,
                                 PRIMARY KEY(Id,Description)
                                 FOREIGN KEY (Id) REFERENCES Users (Id)
                                 

@@ -96,6 +96,8 @@ class GUI():
         self.delete_exercise_button = Button(self.frame, text="מחיקת תרגיל", command=self.delete_exercise_popup,
                                              state="disabled")
         self.delete_exercise_button.grid(column=0, row=8)
+        self.targets_button=Button(self.frame,text="עריכת מטרות",command=self.open_targets_frame,height=1,width=20)
+        self.targets_button.grid(column=9,row=8)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -139,9 +141,8 @@ class GUI():
         if self.running_user_id == "":
             print("load user first no id in ")
         else:
-            plt.style.use("default")
             self.create_calendar_function()
-            plt.style.use("seaborn")
+
             plot_exercises_from_db(self.conn, self.curr_user)
             self.improvment_function()
             self.body_weights_function()
@@ -506,7 +507,7 @@ class GUI():
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\DiagramWeights.pdf")
-            pdf.savefig(fig,facecolor='gainsboro')
+            pdf.savefig(fig)
             plt.close(fig)
             pdf.close()
         else:
@@ -528,19 +529,26 @@ class GUI():
             weights_list.append(record.weight)
             dates_list.append(record.date)
         fig, ax = plt.subplots()
-        plt.plot(dates_list, weights_list, zorder=1)
-        plt.scatter(dates_list, weights_list, s=10,
-                    color='red', zorder=2)
-        plt.suptitle(" מעקב משקל גוף"[::-1],fontsize=20)
+        plt.plot(dates_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+        plt.scatter(dates_list, weights_list, s=30,
+                        color='royalblue', zorder=4)
+        plt.suptitle(" מעקב משקל גוף"[::-1],fontsize=20,weight='bold')
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
         plt.gcf().subplots_adjust(bottom=0.20)
         for i, v in enumerate(weights_list):
-            ax.text(i, v + 0.02, "%d" % v, ha="center")
+            ax.text(i, v + 0.05, "%d" % v, ha="center")
+        ax.set_ylabel("משקל גוף"[::-1], color='black'
+                                                '')
+        # ax.set_xlabel("תאריך"[::-1],color='darkblue')
+        ax.tick_params(labelcolor='black')
+        # ax.set_facecolor('azure')
+        ax.set_axisbelow(True)
+        ax.grid(color='lightgray', axis='y')
 
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\BodyWeights.pdf")
-            pdf.savefig(fig,facecolor='gainsboro')
+            pdf.savefig(fig)
             plt.close(fig)
             pdf.close()
         else:
@@ -645,11 +653,14 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[0, 0].plot(title_list, weights_list, zorder=1)
-                axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[0, 0].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                axs[0, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                axs[0, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                 axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
+                axs[0, 0].tick_params(labelcolor='black')
+                axs[0, 0].set_axisbelow(True)
+                axs[0, 0].grid(color='lightgray', axis='y')
                 for i, v in enumerate(weights_list):
                     axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
                 axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
@@ -671,14 +682,17 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[0, 0].plot(title_list, weights_list, zorder=1)
-                    axs[0, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                    axs[0, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[0, 0].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                    axs[0, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                    axs[0, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                     axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                    axs[0, 0].tick_params(labelcolor='black')
+                    axs[0, 0].set_axisbelow(True)
+                    axs[0, 0].grid(color='lightgray', axis='y')
                 else:
                     axs[0, 0].text(0.5, 0.5, 'אינך עושה בנץ פרס כרגע'[::-1], horizontalalignment='center',
                                    verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
@@ -714,14 +728,17 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[0, 1].plot(title_list, weights_list, zorder=1)
-                axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[0, 1].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                axs[0, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                axs[0, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                 axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                 axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                axs[0, 1].tick_params(labelcolor='black')
+                axs[0, 1].set_axisbelow(True)
+                axs[0, 1].grid(color='lightgray', axis='y')
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "סקוואט",))
@@ -739,14 +756,17 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[0, 1].plot(title_list, weights_list, zorder=1)
-                    axs[0, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                    axs[0, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[0, 1].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                    axs[0, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                    axs[0, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                     axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                    axs[0,1].tick_params(labelcolor='black')
+                    axs[0,1].set_axisbelow(True)
+                    axs[0,1].grid(color='lightgray', axis='y')
                 else:
                     axs[0, 1].text(0.5, 0.5, 'אינך עושה סקוואט כרגע'[::-1], horizontalalignment='center',
                                    verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
@@ -782,14 +802,18 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[1, 1].plot(title_list, weights_list, zorder=1)
-                axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[1, 1].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                axs[1, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                axs[1, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                 axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
+
                 for i, v in enumerate(weights_list):
                     axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
                 axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                axs[1, 1].tick_params(labelcolor='black')
+                axs[1, 1].set_axisbelow(True)
+                axs[1, 1].grid(color='lightgray', axis='y')
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "דדליפט",))
@@ -808,14 +832,17 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[1, 1].plot(title_list, weights_list, zorder=1)
-                    axs[1, 1].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                    axs[1, 1].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[1, 1].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                    axs[1, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                    axs[1, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                     axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                    axs[1, 1].tick_params(labelcolor='black')
+                    axs[1, 1].set_axisbelow(True)
+                    axs[1, 1].grid(color='lightgray', axis='y')
                 else:
                     axs[1, 1].text(0.5, 0.5, 'אינך עושה דדליפט כרגע'[::-1], horizontalalignment='center',
                                    verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
@@ -851,14 +878,17 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[1, 0].plot(title_list, weights_list, zorder=1)
-                axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                axs[1, 0].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                axs[1, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                axs[1, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                 axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                 axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                axs[1, 0].tick_params(labelcolor='black')
+                axs[1, 0].set_axisbelow(True)
+                axs[1, 0].grid(color='lightgray', axis='y')
             else:
                 curr.execute("SELECT Weight FROM Exercises WHERE Id=? AND ExerciseName=?",
                              (self.curr_user.id, "הד פרס",))
@@ -876,14 +906,17 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[1, 0].plot(title_list, weights_list, zorder=1)
-                    axs[1, 0].scatter(title_list, weights_list, s=100, color='red', zorder=2)
-                    axs[1, 0].scatter("ינא", max_weight[0], s=100, color='blue', zorder=3)
-                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20)
+                    axs[1, 0].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                    axs[1, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
+                    axs[1, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
+                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
                     axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
                     axs[1, 0].set_yticks(np.arange(0, max(weights_list) + 30, 15))
+                    axs[1, 0].tick_params(labelcolor='black')
+                    axs[1, 0].set_axisbelow(True)
+                    axs[1, 0].grid(color='lightgray', axis='y')
                 else:
                     axs[1, 0].text(0.5, 0.5, 'אינך עושה הד פרס כרגע'[::-1], horizontalalignment='center',
                                    verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
@@ -891,7 +924,7 @@ class GUI():
         if inspect.stack()[
             1].function == "print_full_report_button_function":  ##checking if the function was called from a full report button
             pdf = matplotlib.backends.backend_pdf.PdfPages("OutPuts\\CompareMySelf.pdf")
-            pdf.savefig(fig,facecolor='gainsboro')
+            pdf.savefig(fig)
             plt.close(fig)
             pdf.close()
         else:
@@ -960,3 +993,27 @@ class GUI():
                             day = day[1::]
                         cal.add_event(day, "'")
         cal.show()
+
+    def open_targets_frame(self):
+
+        def add_target():
+                print("bla bla")
+
+        self.targets=Tk()
+        self.frame_targets = Frame(self.targets)
+        self.frame_targets.grid()
+        #self.targets.geometry("300x300+650+400") #todo change the geometry to fit to center
+        add_target_button=Button(self.frame_targets,text="הוספת מטרה",command=add_target)
+        add_target_button.grid(row=0,column=1)
+        edit_target_button = Button(self.frame_targets, text="עריכת מטרה",command="edit_target")
+        edit_target_button.grid(row=0, column=2)
+        delete_target_button = Button(self.frame_targets, text="מחיקת מטרה",command="remove_target")
+        delete_target_button.grid(row=0, column=3)
+        targets=[]
+        targets_list=Listbox(self.frame_targets,listvariable=targets,height=15)
+        targets_list.grid(row=2,column=0,rowspan=2)
+        targets_label = Label(self.frame_targets, text="רשימת מטרות ", font="Helvetica 12 underline")
+        targets_label.grid(row=1,column=0)
+
+        self.targets.mainloop()
+

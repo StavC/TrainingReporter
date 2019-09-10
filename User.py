@@ -31,15 +31,15 @@ class User(object):
 
             fig, ax = plt.subplots()
 
-            plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1)
-            plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=10,
-                        color='red', zorder=2)
-            plt.suptitle(exercise[::-1],fontsize=20)
+            plt.plot(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), zorder=1,linewidth=1.5,color='royalblue')
+            plt.scatter(self.my_exercises[exercise].get_dates(), self.my_exercises[exercise].get_weights(), s=30,
+                        color='royalblue', zorder=4)
+            plt.suptitle(exercise[::-1],fontsize=20,weight='bold')
 
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
             plt.gcf().subplots_adjust(bottom=0.20)
             for i, v in enumerate(self.my_exercises[exercise].get_weights()):
-                ax.text(i, v + 0.02, "%d" % v, ha="center")
+                ax.text(i, v +0.05, "%d" % v, ha="center")
 
 
             if self.my_exercises[exercise].length() > 100:
@@ -69,8 +69,16 @@ class User(object):
             elif self.my_exercises[exercise].length() > 20:
                 fig.set_size_inches(20, 20)
             #fig.show()
+            ax.set_ylabel("משקל עבודה"[::-1],color='black'
+                                                   '')
+            #ax.set_facecolor('azure')
 
-            pdf.savefig(fig,facecolor='gainsboro')
+            #ax.set_xlabel("תאריך"[::-1],color='darkblue')
+            ax.tick_params(labelcolor='black')
+            ax.set_axisbelow(True)
+            ax.grid(color='lightgray',axis='y')
+
+            pdf.savefig(fig)
             plt.close(fig)
 
 
