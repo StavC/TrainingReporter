@@ -27,13 +27,16 @@ Compare yourself against World Statics for Bench Press Squat DeadLift HeadPress
 
 a diagram to see all exercises minium weight and maximum weight (to see how you growed)
 
-![alt_text](https://i.imgur.com/D6pLK5c.png)
+![alt_text](https://i.imgur.com/Q1nK8xG.png)
 
 Starting to build out the monthly reports in PDF Format
 First Page
-![alt_text](https://i.imgur.com/EFGtQSm.png)
+![alt_text](https://i.imgur.com/Znn0mLt.png)
 
-![alt_text](https://i.imgur.com/ZFxODIV.png)
+![alt_text](https://i.imgur.com/QAe1gWv.png)
+
+Example of the CSV Files that the program read
+![alt_text[(https://i.imgur.com/GJO7Ohn.png)
 
 
 MUCH MORE COMING SOON!
