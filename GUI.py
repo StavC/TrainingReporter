@@ -278,8 +278,8 @@ class GUI():
         for row in rows:
             exercises.append(row[0])
         self.exercises_list.delete('0', 'end')  # removing old exercises they will be added anyway
-        exercises = list(set(exercises))
-        for i in exercises:
+        self.curr_user_exercises = list(set(exercises))
+        for i in self.curr_user_exercises:
             self.exercises_list.insert(END, i)
 
     def delete_personal_info_from_labels(self):
@@ -1006,17 +1006,33 @@ class GUI():
         def add_target():
 
             def add_target_to_db():
-                input_from_weight_target = int(self.weight_target_field.get())
-                print(input_from_weight_target)
-                input_from_description=self.description_text.get("1.0","end-1c")
-                print(input_from_description)
-                categories=self.categorize_menu.get()
-                print(categories)
+                try:
+                    input_from_weight_target = int(self.weight_target_field.get())
+                    print(input_from_weight_target)
+                    input_from_description=self.description_text.get("1.0","end-1c")
+                    print(input_from_description)
+                    categories=self.categorize_menu.get()
+                    print(categories)
+                    input_from_start_date=self.starting_date_field.get()
+                    print(input_from_start_date)
+                    exercise_name=self.exercises_menu.get()
+                    print(exercise_name)
+                    curr=self.conn.cursor()
+                    curr.execute(
+                        "INSERT INTO Targets(Id,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?)",
+                        (self.curr_user.id, input_from_weight_target,exercise_name, input_from_description, "לא הושלמה", input_from_start_date, " ", categories,))
+                    self.conn.commit()
+                except ValueError:
+                    messagebox.showerror("Error", "נא להכניס רק מספרים בשדה (משקל מטרה)")
 
             self.add_targets_tk=Tk()
             self.frame_add_target=Frame(self.add_targets_tk)
             self.frame_add_target.grid()
-            self.add_targets_tk.geometry("250x250+650+400")
+            #self.add_targets_tk.geometry("350x300+650+400")
+            len_max = 0
+            for m in self.curr_user_exercises:
+                if len(m) > len_max:
+                    len_max = len(m)
             self.explain_label = Label(self.frame_add_target, text="!הוספת מטרה חדשה ", font="Helvetica 12 underline")
             self.explain_label.grid(column=1,row=0)
             self.weight_target = StringVar()
@@ -1024,19 +1040,34 @@ class GUI():
             self.weight_target_label=Label(self.frame_add_target,text="משקל מטרה")
             self.weight_target_field.grid(column=1,row=2)
             self.weight_target_label.grid(column=1,row=1)
-            self.description_text=Text(self.frame_add_target,width=20,height=4)
+            self.description_text=Text(self.frame_add_target,width=len_max,height=4)
             self.description_text.grid(column=1,row=4)
             self.description_label=Label(self.frame_add_target,text="תיאור המטרה")
             self.description_label.grid(column=1,row=3)
+
             options=["משקל בתרגיל","משקל גוף","מספר אימונים החודש"]
             self.categorize_menu=ttk.Combobox(self.frame_add_target,values=options)
             self.categorize_menu.grid(column=1,row=6)
             self.categorize_label=Label(self.frame_add_target,text="קטגורית מטרה")
             self.categorize_label.grid(column=1,row=5)
+            self.exercise_label = Label(self.frame_add_target, text="בחירת תרגיל")
+            self.exercise_label.grid(column=1, row=7)
+
+            self.exercises_menu=ttk.Combobox(self.frame_add_target,values=self.curr_user_exercises ,width=len_max)
+            self.exercises_menu.grid(column=1,row=8)
+            today=datetime.today()
+            current_date=today.strftime("%d/%m/%Y")
+            self.starting_date=StringVar()
+            self.starting_date_field=Entry(self.frame_add_target,textvariable=self.starting_date,width=15)
+            self.starting_date_field.insert(0,current_date)
+            self.starting_date_label=Label(self.frame_add_target,text="תאריך התחלה")
+            self.starting_date_label.grid(column=1,row=9)
+            self.starting_date_field.grid(column=1,row=10)
+
             self.approve_button=Button(self.frame_add_target,text="אישור",command=add_target_to_db)
-            self.cancel_button = Button(self.frame_add_target, text="ביטול", command=self.frame_add_target.quit)
-            self.approve_button.grid(column=0,row=7)
-            self.cancel_button.grid(column=2,row=7)
+            self.cancel_button = Button(self.frame_add_target, text="ביטול", command=self.add_targets_tk.destroy)
+            self.approve_button.grid(column=0,row=11)
+            self.cancel_button.grid(column=2,row=11)
 
 
 
