@@ -64,10 +64,11 @@ def my_tables():
                                 Status text,
                                 StartingDate text,
                                 FinishedDate text,
+                                Categorize text, 
                                 PRIMARY KEY(Id,Description)
                                 FOREIGN KEY (Id) REFERENCES Users (Id)
                                 
-                                """
+                                );"""
 
     sql_create_benchpress_standards="""CREATE TABLE IF NOT EXISTS BenchPress(
                                     BodyWeight integer,

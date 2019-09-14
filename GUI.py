@@ -12,6 +12,8 @@ import inspect
 from fpdf import FPDF
 from datetime import datetime
 from Calendar import  MplCalendar
+from tkinter import ttk
+
 FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
 
 
@@ -96,7 +98,7 @@ class GUI():
         self.delete_exercise_button = Button(self.frame, text="מחיקת תרגיל", command=self.delete_exercise_popup,
                                              state="disabled")
         self.delete_exercise_button.grid(column=0, row=8)
-        self.targets_button=Button(self.frame,text="עריכת מטרות",command=self.open_targets_frame,height=1,width=20)
+        self.targets_button=Button(self.frame,text="עריכת מטרות",command=self.open_targets_frame,height=1,width=20,state="disabled")
         self.targets_button.grid(column=9,row=8)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
@@ -132,6 +134,7 @@ class GUI():
         self.body_weights_button.config(state="normal")
         self.user_compare_to_avg_button.config(state="normal")
         self.delete_exercise_button.config(state="normal")
+        self.targets_button.config(state="normal")
 
         plot_exercises_from_db(self.conn, self.curr_user)
         self.add_personal_info_to_labels()
@@ -210,6 +213,8 @@ class GUI():
                 self.body_weights_button.config(state="normal")
                 self.user_compare_to_avg_button.config(state="normal")
                 self.delete_exercise_button.config(state="normal")
+                self.targets_button.config(state="normal")
+
                 self.add_personal_info_to_labels()
             else:
                 print("User doesnt exist")
@@ -221,6 +226,7 @@ class GUI():
                 self.body_weights_button.config(state="disabled")
                 self.user_compare_to_avg_button.config(state="disabled")
                 self.delete_exercise_button.config(state="disabled")
+                self.targets_button.config(state="disabled")
                 self.delete_personal_info_from_labels()
         except ValueError:
             messagebox.showerror("Error", "Enter only numbers (ID)")
@@ -230,6 +236,7 @@ class GUI():
             self.multi_report_button.config(state="disabled")
             self.user_compare_to_avg_button.config(state="disabled")
             self.delete_exercise_button.config(state="disabled")
+            self.targets_button.config(state="disabled")
 
             self.delete_personal_info_from_labels()
             print("ValueError")
@@ -997,7 +1004,42 @@ class GUI():
     def open_targets_frame(self):
 
         def add_target():
-                print("bla bla")
+
+            def add_target_to_db():
+                input_from_weight_target = int(self.weight_target_field.get())
+                print(input_from_weight_target)
+                input_from_description=self.description_text.get("1.0","end-1c")
+                print(input_from_description)
+                categories=self.categorize_menu.get()
+                print(categories)
+
+            self.add_targets_tk=Tk()
+            self.frame_add_target=Frame(self.add_targets_tk)
+            self.frame_add_target.grid()
+            self.add_targets_tk.geometry("250x250+650+400")
+            self.explain_label = Label(self.frame_add_target, text="!הוספת מטרה חדשה ", font="Helvetica 12 underline")
+            self.explain_label.grid(column=1,row=0)
+            self.weight_target = StringVar()
+            self.weight_target_field = Entry(self.frame_add_target, textvariable=self.weight_target, width=15)
+            self.weight_target_label=Label(self.frame_add_target,text="משקל מטרה")
+            self.weight_target_field.grid(column=1,row=2)
+            self.weight_target_label.grid(column=1,row=1)
+            self.description_text=Text(self.frame_add_target,width=20,height=4)
+            self.description_text.grid(column=1,row=4)
+            self.description_label=Label(self.frame_add_target,text="תיאור המטרה")
+            self.description_label.grid(column=1,row=3)
+            options=["משקל בתרגיל","משקל גוף","מספר אימונים החודש"]
+            self.categorize_menu=ttk.Combobox(self.frame_add_target,values=options)
+            self.categorize_menu.grid(column=1,row=6)
+            self.categorize_label=Label(self.frame_add_target,text="קטגורית מטרה")
+            self.categorize_label.grid(column=1,row=5)
+            self.approve_button=Button(self.frame_add_target,text="אישור",command=add_target_to_db)
+            self.cancel_button = Button(self.frame_add_target, text="ביטול", command=self.frame_add_target.quit)
+            self.approve_button.grid(column=0,row=7)
+            self.cancel_button.grid(column=2,row=7)
+
+
+
 
         self.targets=Tk()
         self.frame_targets = Frame(self.targets)
