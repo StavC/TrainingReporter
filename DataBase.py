@@ -112,6 +112,7 @@ def my_tables():
                                         Gender text,
                                         PRIMARY KEY(BodyWeight,Gender)
                                         );"""
+    
 
 
 
@@ -215,4 +216,7 @@ def search_user(conn,id):
     cur.execute("SELECT Id FROM Exercises WHERE Id=?", (id,))
     user_id = cur.fetchall()
     return user_id
+
+
+
 

@@ -19,6 +19,7 @@ def main():
     create_table(conn,headpress_standards)
     create_table(conn,targets_table)
 
+
     root= Tk()
     gui = GUI(root)
     root.title("WhyFitness Reporter")
