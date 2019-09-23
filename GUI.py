@@ -1017,11 +1017,20 @@ class GUI():
                     print(input_from_start_date)
                     exercise_name=self.exercises_menu.get()
                     print(exercise_name)
+                    input_from_title=str(self.title_field.get())
+                    print(input_from_title)
                     curr=self.conn.cursor()
                     curr.execute(
-                        "INSERT INTO Targets(Id,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?)",
-                        (self.curr_user.id, input_from_weight_target,exercise_name, input_from_description, "לא הושלמה", input_from_start_date, " ", categories,))
+                        "INSERT INTO Targets(Id,Title,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?,?)",
+                        (self.curr_user.id,input_from_title, input_from_weight_target,exercise_name, input_from_description, "לא הושלמה", input_from_start_date, " ", categories,))
                     self.conn.commit()
+                    curr = self.conn.cursor()
+                    curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
+                    rows = curr.fetchall()
+                    targets_list.delete('0','end')
+                    for row in rows:
+                        targets_list.insert(END, row[1])
+
                 except ValueError:
                     messagebox.showerror("Error", "נא להכניס רק מספרים בשדה (משקל מטרה)")
 
@@ -1038,20 +1047,26 @@ class GUI():
             self.weight_target = StringVar()
             self.weight_target_field = Entry(self.frame_add_target, textvariable=self.weight_target, width=15)
             self.weight_target_label=Label(self.frame_add_target,text="משקל מטרה")
-            self.weight_target_field.grid(column=1,row=2)
-            self.weight_target_label.grid(column=1,row=1)
+            self.weight_target_field.grid(column=1,row=4)
+            self.weight_target_label.grid(column=1,row=3)
             self.description_text=Text(self.frame_add_target,width=len_max,height=4)
-            self.description_text.grid(column=1,row=4)
+            self.description_text.grid(column=1,row=6)
             self.description_label=Label(self.frame_add_target,text="תיאור המטרה")
-            self.description_label.grid(column=1,row=3)
+            self.description_label.grid(column=1,row=5)
+
+            self.title_var = StringVar()
+            self.title_field=Entry(self.frame_add_target,textvariable=self.title_var,width=15)
+            self.title_label=Label(self.frame_add_target,text="כותרת מטרה")
+            self.title_label.grid(column=1,row=1)
+            self.title_field.grid(column=1,row=2)
 
             options=["משקל בתרגיל","משקל גוף","מספר אימונים החודש"]
             self.categorize_menu=ttk.Combobox(self.frame_add_target,values=options)
-            self.categorize_menu.grid(column=1,row=6)
+            self.categorize_menu.grid(column=1,row=8)
             self.categorize_label=Label(self.frame_add_target,text="קטגורית מטרה")
-            self.categorize_label.grid(column=1,row=5)
+            self.categorize_label.grid(column=1,row=7)
             self.exercise_label = Label(self.frame_add_target, text="בחירת תרגיל")
-            self.exercise_label.grid(column=1, row=7)
+            self.exercise_label.grid(column=1, row=9)
 
             self.exercises_menu=ttk.Combobox(self.frame_add_target,values=self.curr_user_exercises ,width=len_max)
             self.exercises_menu.grid(column=1,row=8)
@@ -1061,13 +1076,14 @@ class GUI():
             self.starting_date_field=Entry(self.frame_add_target,textvariable=self.starting_date,width=15)
             self.starting_date_field.insert(0,current_date)
             self.starting_date_label=Label(self.frame_add_target,text="תאריך התחלה")
-            self.starting_date_label.grid(column=1,row=9)
-            self.starting_date_field.grid(column=1,row=10)
+            self.starting_date_label.grid(column=1,row=11)
+            self.starting_date_field.grid(column=1,row=12)
 
             self.approve_button=Button(self.frame_add_target,text="אישור",command=add_target_to_db)
             self.cancel_button = Button(self.frame_add_target, text="ביטול", command=self.add_targets_tk.destroy)
-            self.approve_button.grid(column=0,row=11)
-            self.cancel_button.grid(column=2,row=11)
+            self.approve_button.grid(column=0,row=12)
+            self.cancel_button.grid(column=2,row=12)
+
 
 
 
@@ -1082,11 +1098,19 @@ class GUI():
         edit_target_button.grid(row=0, column=2)
         delete_target_button = Button(self.frame_targets, text="מחיקת מטרה",command="remove_target")
         delete_target_button.grid(row=0, column=3)
-        targets=[]
+        targets = []
+
+
         targets_list=Listbox(self.frame_targets,listvariable=targets,height=15)
         targets_list.grid(row=2,column=0,rowspan=2)
         targets_label = Label(self.frame_targets, text="רשימת מטרות ", font="Helvetica 12 underline")
         targets_label.grid(row=1,column=0)
+        curr = self.conn.cursor()
+        curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
+        rows = curr.fetchall()
+        print(rows)
+        for row in rows:
+            targets_list.insert(END, row[1])
 
         self.targets.mainloop()
 

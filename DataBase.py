@@ -59,6 +59,7 @@ def my_tables():
 
     sql_create_targets = """CREATE TABLE IF NOT EXISTS Targets(
                                 Id integer,
+                                Title text,
                                 WeightTarget integer,
                                 ExerciseName,
                                 Description text,
