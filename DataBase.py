@@ -67,7 +67,7 @@ def my_tables():
                                 StartingDate text,
                                 FinishedDate text,
                                 Categorize text, 
-                                PRIMARY KEY(Id,Description)
+                                PRIMARY KEY(Id,Title)
                                 FOREIGN KEY (Id) REFERENCES Users (Id)
                                 
                                 );"""

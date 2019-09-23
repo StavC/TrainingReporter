@@ -1008,17 +1008,17 @@ class GUI():
             def add_target_to_db():
                 try:
                     input_from_weight_target = int(self.weight_target_field.get())
-                    print(input_from_weight_target)
+                    #print(input_from_weight_target)
                     input_from_description=self.description_text.get("1.0","end-1c")
-                    print(input_from_description)
+                    #print(input_from_description)
                     categories=self.categorize_menu.get()
-                    print(categories)
+                    #print(categories)
                     input_from_start_date=self.starting_date_field.get()
-                    print(input_from_start_date)
+                    #print(input_from_start_date)
                     exercise_name=self.exercises_menu.get()
-                    print(exercise_name)
+                    #print(exercise_name)
                     input_from_title=str(self.title_field.get())
-                    print(input_from_title)
+                    #print(input_from_title)
                     curr=self.conn.cursor()
                     curr.execute(
                         "INSERT INTO Targets(Id,Title,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?,?)",
@@ -1084,33 +1084,213 @@ class GUI():
             self.approve_button.grid(column=0,row=12)
             self.cancel_button.grid(column=2,row=12)
 
+        def onselect(evt):
+            # Note here that Tkinter passes an event object to onselect()
+            w = evt.widget
+            #index = w.curselection()[0]
+            #value = w.get(index)
+            #print('You selected item %d: "%s"' % (index, value))
+            print(w.get(ANCHOR))
+
+
+            curr.execute("SELECT * FROM Targets WHERE Id=? AND Title=?", (self.curr_user.id,w.get(ANCHOR),))
+            rows = curr.fetchall()
+            print(rows)
+
+            temp = rows[0][1]
+            temp = str(temp)
+            title_label.config(text="כותרת מטרה: " + temp)
+
+            temp = rows[0][2]
+            temp = str(temp)
+            weight_target_label.config(text="משקל מטרה: " + temp)
+
+            temp = rows[0][3]
+            temp = str(temp)
+            exercise_name_label.config(text="שם תרגיל: " + temp)
+
+            temp = rows[0][4]
+            temp = str(temp)
+            description_label.config(text="תיאור מטרה: " + temp)
+
+            temp = rows[0][5]
+            temp = str(temp)
+            status_label.config(text="סטטוס מטרה: " + temp)
+
+            temp = rows[0][6]
+            temp = str(temp)
+            state_date_label.config(text="תאריך התחלה: " + temp)
+
+            temp = rows[0][7]
+            temp = str(temp)
+            finish_date_label.config(text="תאריך סיום: " + temp)
+
+        def delete_target_from_db():
+            curr.execute("DELETE FROM Targets WHERE Id=? AND Title=? ",
+                         (self.curr_user.id, targets_list.get(ANCHOR),))
+            self.conn.commit()
+            self.popup.destroy()
+            curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
+            rows = curr.fetchall()
+            targets_list.delete('0', 'end')
+            for row in rows:
+                targets_list.insert(END, row[1])
+
+        def delete_target():
+            selected=targets_list.get(ANCHOR)
+            if selected:
+                self.popup = Tk()
+                frame1 = Frame(self.popup, highlightbackground="RED", highlightcolor="RED", highlightthickness=1,
+                               bd=0)
+                frame1.pack()
+                self.popup.overrideredirect(1)
+                self.popup.geometry("300x75+650+400")
+                lbl = Label(frame1, text="אתה בטוח שאתה את המטרה ?")
+                lbl.pack()
+                yes_btn = Button(frame1, text="Yes", bg="light blue", fg="red",
+                                 command=delete_target_from_db, width=10)
+                yes_btn.pack(padx=30, pady=10, side=LEFT)
+                no_btn = Button(frame1, text="No", bg="light blue", fg="red", command=self.popup.destroy, width=10)
+                no_btn.pack(padx=10, pady=10, side=LEFT)
+                self.popup.mainloop()
+
+        def edit_target():
+
+            def edit_target_to_db():
+                try:
+                    input_from_weight_target = int(self.weight_target_field.get())
+                    #print(input_from_weight_target)
+                    input_from_description=self.description_text.get("1.0","end-1c")
+                    #print(input_from_description)
+                    categories=self.categorize_menu.get()
+                    #print(categories)
+                    input_from_start_date=self.starting_date_field.get()
+                    #print(input_from_start_date)
+                    exercise_name=self.exercises_menu.get()
+                    #print(exercise_name)
+                    input_from_title=str(self.title_field.get())
+                    #print(input_from_title)
+                    selected_title=targets_list.get(ANCHOR)
+                    curr=self.conn.cursor()
+                    curr.execute(
+                        '''UPDATE Targets SET Title=?,WeightTarget=?,ExerciseName=?,Description=?,StartingDate=?
+                         WHERE Id=? AND Title=? ''',
+                        (input_from_title, input_from_weight_target,exercise_name, input_from_description, input_from_start_date,self.curr_user.id,selected_title,))
+                    self.conn.commit()
+                    curr = self.conn.cursor()
+                    curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
+                    rows = curr.fetchall()
+                    targets_list.delete('0','end')
+                    for row in rows:
+                        targets_list.insert(END, row[1])
+                    self.edit_targets_tk.destroy()
+
+                except ValueError:
+                    messagebox.showerror("Error", "נא להכניס רק מספרים בשדה (משקל מטרה)")
+
+
+            self.edit_targets_tk = Tk()
+            self.frame_edit_target = Frame(self.edit_targets_tk)
+            self.frame_edit_target.grid()
+            # self.add_targets_tk.geometry("350x300+650+400")
+            len_max = 0
+            for m in self.curr_user_exercises:
+                if len(m) > len_max:
+                    len_max = len(m)
+            self.explain_label = Label(self.frame_edit_target, text="!עריכת מטרה קיימת ", font="Helvetica 12 underline")
+            self.explain_label.grid(column=1, row=0)
+            self.weight_target = StringVar()
+            self.weight_target_field = Entry(self.frame_edit_target, textvariable=self.weight_target, width=15)
+            self.weight_target_label = Label(self.frame_edit_target, text="משקל מטרה")
+            self.weight_target_field.grid(column=1, row=4)
+            self.weight_target_label.grid(column=1, row=3)
+            self.description_text = Text(self.frame_edit_target, width=len_max, height=4)
+            self.description_text.grid(column=1, row=6)
+            self.description_label = Label(self.frame_edit_target, text="תיאור המטרה")
+            self.description_label.grid(column=1, row=5)
+
+            self.title_var = StringVar()
+            self.title_field = Entry(self.frame_edit_target, textvariable=self.title_var, width=15)
+            self.title_label = Label(self.frame_edit_target, text="כותרת מטרה")
+            self.title_label.grid(column=1, row=1)
+            self.title_field.grid(column=1, row=2)
+
+            options = ["משקל בתרגיל", "משקל גוף", "מספר אימונים החודש"]
+            self.categorize_menu = ttk.Combobox(self.frame_edit_target, values=options)
+            self.categorize_menu.grid(column=1, row=8)
+            self.categorize_label = Label(self.frame_edit_target, text="קטגורית מטרה")
+            self.categorize_label.grid(column=1, row=7)
+            self.exercise_label = Label(self.frame_edit_target, text="בחירת תרגיל")
+            self.exercise_label.grid(column=1, row=9)
+
+            self.exercises_menu = ttk.Combobox(self.frame_edit_target, values=self.curr_user_exercises, width=len_max)
+            self.exercises_menu.grid(column=1, row=8)
+            today = datetime.today()
+            current_date = today.strftime("%d/%m/%Y")
+            self.starting_date = StringVar()
+            self.starting_date_field = Entry(self.frame_edit_target, textvariable=self.starting_date, width=15)
+            self.starting_date_field.insert(0, current_date)
+            self.starting_date_label = Label(self.frame_edit_target, text="תאריך התחלה")
+            self.starting_date_label.grid(column=1, row=11)
+            self.starting_date_field.grid(column=1, row=12)
+
+            self.approve_button = Button(self.frame_edit_target, text="אישור", command=edit_target_to_db)
+            self.cancel_button = Button(self.frame_edit_target, text="ביטול", command=self.edit_targets_tk.destroy)
+            self.approve_button.grid(column=0, row=12)
+            self.cancel_button.grid(column=2, row=12)
 
 
 
 
+
+
+
+        curr = self.conn.cursor()
         self.targets=Tk()
         self.frame_targets = Frame(self.targets)
         self.frame_targets.grid()
         #self.targets.geometry("300x300+650+400") #todo change the geometry to fit to center
         add_target_button=Button(self.frame_targets,text="הוספת מטרה",command=add_target)
         add_target_button.grid(row=0,column=1)
-        edit_target_button = Button(self.frame_targets, text="עריכת מטרה",command="edit_target")
+        edit_target_button = Button(self.frame_targets, text="עריכת מטרה",command=edit_target)
         edit_target_button.grid(row=0, column=2)
-        delete_target_button = Button(self.frame_targets, text="מחיקת מטרה",command="remove_target")
+        delete_target_button = Button(self.frame_targets, text="מחיקת מטרה",command=delete_target)
         delete_target_button.grid(row=0, column=3)
+
+        title_label=Label(self.frame_targets,text=":כותרת מטרה ")
+        weight_target_label=Label(self.frame_targets,text=":משקל מטרה ")
+        exercise_name_label=Label(self.frame_targets,text=':שם תרגיל ')
+        description_label=Label(self.frame_targets,text=':תיאור מטרה ')
+        status_label=Label(self.frame_targets,text=':סטטוס מטרה ')
+        state_date_label=Label(self.frame_targets,text=':תאריך התחלה ')
+        finish_date_label=Label(self.frame_targets,text=' :תאריך סיום ')
+        title_label.grid(row=2,column=5)
+        weight_target_label.grid(row=3,column=5)
+        exercise_name_label.grid(row=4,column=5)
+        description_label.grid(row=5,column=5)
+        status_label.grid(row=6,column=5)
+        state_date_label.grid(row=7,column=5)
+        finish_date_label.grid(row=8,column=5)
+
+
+
+        ##### handiling targets list
         targets = []
-
-
-        targets_list=Listbox(self.frame_targets,listvariable=targets,height=15)
-        targets_list.grid(row=2,column=0,rowspan=2)
+        targets_list=Listbox(self.frame_targets,listvariable=targets,height=15,name='lb')
+        targets_list.grid(row=2,column=0,rowspan=6, sticky=(W, S, N, E))
         targets_label = Label(self.frame_targets, text="רשימת מטרות ", font="Helvetica 12 underline")
-        targets_label.grid(row=1,column=0)
-        curr = self.conn.cursor()
+        targets_label.grid(row=1,column=0,sticky=(W,S))
+        targets_list.bind('<<ListboxSelect>>', onselect)
+
+
         curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
         rows = curr.fetchall()
-        print(rows)
+        #print(rows)
         for row in rows:
             targets_list.insert(END, row[1])
 
+
+
         self.targets.mainloop()
+
 
