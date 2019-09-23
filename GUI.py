@@ -11,11 +11,10 @@ from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import inspect
 from fpdf import FPDF
 from datetime import datetime
-from Calendar import  MplCalendar
+from Calendar import MplCalendar
 from tkinter import ttk
 
 FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
-
 
 
 class GUI():
@@ -98,8 +97,9 @@ class GUI():
         self.delete_exercise_button = Button(self.frame, text="מחיקת תרגיל", command=self.delete_exercise_popup,
                                              state="disabled")
         self.delete_exercise_button.grid(column=0, row=8)
-        self.targets_button=Button(self.frame,text="עריכת מטרות",command=self.open_targets_frame,height=1,width=20,state="disabled")
-        self.targets_button.grid(column=9,row=8)
+        self.targets_button = Button(self.frame, text="עריכת מטרות", command=self.open_targets_frame, height=1,
+                                     width=20, state="disabled")
+        self.targets_button.grid(column=9, row=8)
         for child in self.frame.winfo_children(): child.grid_configure(padx=10, pady=5)
 
         # exercises label and listbox with scroller
@@ -152,8 +152,35 @@ class GUI():
             self.user_compare_to_avg_function()
             self.make_monthly_report()
 
+    def make_summary_page(self):
+
+        pdf=FPDF(format='letter', unit='in')
+        pdf.add_page()
+        pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
+        pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
+        pdf.set_font("Abraham-Regular", '', size=10)
+        pdf.cell(200,10,txt="אז מה היה לנו החודש",ln=1,align='C')
+        curr = self.conn.cursor()
+        curr.execute('SELECT * FROM Targets WHERE Id=?',(self.curr_user.id,))
+        rows=curr.fetchall()
+        epw = pdf.w - 2 * pdf.l_margin
+
+        col_width = epw/8
+        row_height = pdf.font_size
+        for row in rows:
+            for item in row:
+                # Enter data in colums
+                # Notice the use of the function str to coerce any input to the
+                # string type. This is needed
+                # since pyFPDF expects a string, not a number.
+                pdf.cell(col_width, row_height, txt=str(item), border=1)
+            pdf.ln(row_height)
+        pdf.output('OutPuts\\simple_table.pdf')
+
     def make_monthly_report(self):
 
+
+        self.make_summary_page()
         pdf = FPDF()
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
@@ -192,6 +219,7 @@ class GUI():
         outputStream = open('OutPuts\\MonthlyReport.pdf', "wb")
         output.write(outputStream)
         outputStream.close()
+
     def search_user_button_function(self):
         try:
             input_from_search_field = int(self.search.get())
@@ -320,7 +348,7 @@ class GUI():
                 plt.plot(dates_list, weights_list, zorder=1)
                 plt.scatter(dates_list, weights_list, s=10,
                             color='red', zorder=2)
-                plt.suptitle(selected[::-1],fontsize=20)
+                plt.suptitle(selected[::-1], fontsize=20)
                 plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
                 plt.gcf().subplots_adjust(bottom=0.20)
                 for i, v in enumerate(weights_list):
@@ -503,7 +531,7 @@ class GUI():
         p2 = plt.bar(ind, max_list, width, bottom=min_list, color="cornflowerblue")
 
         plt.ylabel('משקלים'[::-1])
-        plt.title('שיפור במשקל לפי תרגיל'[::-1],fontsize=20)
+        plt.title('שיפור במשקל לפי תרגיל'[::-1], fontsize=20)
         plt.xticks(ind, exercises_list_for_min_max)
         totalmax = ((max(max_list)) + (max(min_list)))
         plt.yticks(np.arange(0, totalmax + 20, 10))
@@ -536,16 +564,16 @@ class GUI():
             weights_list.append(record.weight)
             dates_list.append(record.date)
         fig, ax = plt.subplots()
-        plt.plot(dates_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+        plt.plot(dates_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
         plt.scatter(dates_list, weights_list, s=30,
-                        color='royalblue', zorder=4)
-        plt.suptitle(" מעקב משקל גוף"[::-1],fontsize=20,weight='bold')
+                    color='royalblue', zorder=4)
+        plt.suptitle(" מעקב משקל גוף"[::-1], fontsize=20, weight='bold')
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=90, ha="right")
         plt.gcf().subplots_adjust(bottom=0.20)
         for i, v in enumerate(weights_list):
             ax.text(i, v + 0.05, "%d" % v, ha="center")
         ax.set_ylabel("משקל גוף"[::-1], color='black'
-                                                '')
+                                              '')
         # ax.set_xlabel("תאריך"[::-1],color='darkblue')
         ax.tick_params(labelcolor='black')
         # ax.set_facecolor('azure')
@@ -660,10 +688,11 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[0, 0].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                axs[0, 0].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                 axs[0, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                 axs[0, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ1 מול משקל גוף ממוצע-"[::-1], fontsize=20,
+                                    weight='bold')
                 axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
                 axs[0, 0].tick_params(labelcolor='black')
                 axs[0, 0].set_axisbelow(True)
@@ -689,10 +718,11 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[0, 0].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                    axs[0, 0].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                     axs[0, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                     axs[0, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                    axs[0, 0].set_title(str(weight_to_compare) + "משקל בנץ פרס רמ5 מול משקל גוף ממוצע-"[::-1],
+                                        fontsize=20, weight='bold')
                     axs[0, 0].set(ylabel='משקל בנץ פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 0].text(i, v + 4, "%d" % v, ha="center")
@@ -735,10 +765,11 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[0, 1].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                axs[0, 1].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                 axs[0, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                 axs[0, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט רמ1 מול משקל גוף ממוצע-"[::-1], fontsize=20,
+                                    weight='bold')
                 axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
@@ -763,17 +794,18 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[0, 1].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                    axs[0, 1].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                     axs[0, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                     axs[0, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                    axs[0, 1].set_title(str(weight_to_compare) + "משקל סקוואט 5רמ מול משקל גוף ממוצע-"[::-1],
+                                        fontsize=20, weight='bold')
                     axs[0, 1].set(ylabel='משקל סקוואט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[0, 1].text(i, v + 4, "%d" % v, ha="center")
                     axs[0, 1].set_yticks(np.arange(0, max(weights_list) + 30, 15))
-                    axs[0,1].tick_params(labelcolor='black')
-                    axs[0,1].set_axisbelow(True)
-                    axs[0,1].grid(color='lightgray', axis='y')
+                    axs[0, 1].tick_params(labelcolor='black')
+                    axs[0, 1].set_axisbelow(True)
+                    axs[0, 1].grid(color='lightgray', axis='y')
                 else:
                     axs[0, 1].text(0.5, 0.5, 'אינך עושה סקוואט כרגע'[::-1], horizontalalignment='center',
                                    verticalalignment='center', bbox=dict(facecolor='red', alpha=0.5))
@@ -809,10 +841,11 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[1, 1].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                axs[1, 1].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                 axs[1, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                 axs[1, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ1 מול משקל גוף ממוצע-"[::-1], fontsize=20,
+                                    weight='bold')
                 axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
 
                 for i, v in enumerate(weights_list):
@@ -839,10 +872,11 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[1, 1].plot(title_list, weights_list, zorder=1,linewidth=1.5,color='royalblue')
+                    axs[1, 1].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                     axs[1, 1].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                     axs[1, 1].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                    axs[1, 1].set_title(str(weight_to_compare) + "משקל דדליפט רמ5 מול משקל גוף ממוצע-"[::-1],
+                                        fontsize=20, weight='bold')
                     axs[1, 1].set(ylabel='משקל דדליפט'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 1].text(i, v + 4, "%d" % v, ha="center")
@@ -885,10 +919,11 @@ class GUI():
                 for line in temp_list:
                     title_list.append(line.date[::-1])
                     weights_list.append(line.weight)
-                axs[1, 0].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                axs[1, 0].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                 axs[1, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                 axs[1, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1], fontsize=20,
+                                    weight='bold')
                 axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                 for i, v in enumerate(weights_list):
                     axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
@@ -913,10 +948,11 @@ class GUI():
                     for line in temp_list2:
                         title_list.append(line.date[::-1])
                         weights_list.append(line.weight)
-                    axs[1, 0].plot(title_list, weights_list,zorder=1,linewidth=1.5,color='royalblue')
+                    axs[1, 0].plot(title_list, weights_list, zorder=1, linewidth=1.5, color='royalblue')
                     axs[1, 0].scatter(title_list, weights_list, s=30, color='royalblue', zorder=2)
                     axs[1, 0].scatter("ינא", max_weight[0], s=40, color='red', zorder=3)
-                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1],fontsize=20,weight='bold')
+                    axs[1, 0].set_title(str(weight_to_compare) + "משקל הד פרס מול משקל גוף ממוצע-"[::-1], fontsize=20,
+                                        weight='bold')
                     axs[1, 0].set(ylabel='משקל הד פרס'[::-1])
                     for i, v in enumerate(weights_list):
                         axs[1, 0].text(i, v + 4, "%d" % v, ha="center")
@@ -976,22 +1012,22 @@ class GUI():
         self.popup.destroy()
 
     def create_calendar_function(self):
-        current_year=datetime.now().year
-        current_month=datetime.now().month
-        months_to_add_0=[1,2,3,4,5,6,7,8,9]
+        current_year = datetime.now().year
+        current_month = datetime.now().month
+        months_to_add_0 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         cal = MplCalendar(current_year, 8)
-        curr=self.conn.cursor()
-        curr.execute("SELECT DISTINCT(Date) FROM Exercises WHERE Id=?",(self.curr_user.id,))
+        curr = self.conn.cursor()
+        curr.execute("SELECT DISTINCT(Date) FROM Exercises WHERE Id=?", (self.curr_user.id,))
         rows = curr.fetchall()
         for row in rows:
             if current_month in months_to_add_0:
-             if datetime.strptime(row[0],'%d/%m/%Y').strftime('%m')=="0"+str(8) :
-                if datetime.strptime(row[0],'%d/%m/%Y').strftime('%Y')==str(current_year):
-                  day=datetime.strptime(row[0],'%d/%m/%Y').strftime('%d')
-                  if day.startswith("0"):
-                      day=day[1::]
-                  cal.add_event(day,"'")
+                if datetime.strptime(row[0], '%d/%m/%Y').strftime('%m') == "0" + str(8):
+                    if datetime.strptime(row[0], '%d/%m/%Y').strftime('%Y') == str(current_year):
+                        day = datetime.strptime(row[0], '%d/%m/%Y').strftime('%d')
+                        if day.startswith("0"):
+                            day = day[1::]
+                        cal.add_event(day, "'")
             else:
                 if datetime.strptime(row[0], '%d/%m/%Y').strftime('%m') == str(current_month):
                     if datetime.strptime(row[0], '%d/%m/%Y').strftime('%Y') == str(current_year):
@@ -1008,94 +1044,94 @@ class GUI():
             def add_target_to_db():
                 try:
                     input_from_weight_target = int(self.weight_target_field.get())
-                    #print(input_from_weight_target)
-                    input_from_description=self.description_text.get("1.0","end-1c")
-                    #print(input_from_description)
-                    categories=self.categorize_menu.get()
-                    #print(categories)
-                    input_from_start_date=self.starting_date_field.get()
-                    #print(input_from_start_date)
-                    exercise_name=self.exercises_menu.get()
-                    #print(exercise_name)
-                    input_from_title=str(self.title_field.get())
-                    #print(input_from_title)
-                    curr=self.conn.cursor()
+                    # print(input_from_weight_target)
+                    input_from_description = self.description_text.get("1.0", "end-1c")
+                    # print(input_from_description)
+                    categories = self.categorize_menu.get()
+                    # print(categories)
+                    input_from_start_date = self.starting_date_field.get()
+                    # print(input_from_start_date)
+                    exercise_name = self.exercises_menu.get()
+                    # print(exercise_name)
+                    input_from_title = str(self.title_field.get())
+                    # print(input_from_title)
+                    curr = self.conn.cursor()
                     curr.execute(
                         "INSERT INTO Targets(Id,Title,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?,?)",
-                        (self.curr_user.id,input_from_title, input_from_weight_target,exercise_name, input_from_description, "לא הושלמה", input_from_start_date, " ", categories,))
+                        (self.curr_user.id, input_from_title, input_from_weight_target, exercise_name,
+                         input_from_description, "לא הושלמה", input_from_start_date, " ", categories,))
                     self.conn.commit()
                     curr = self.conn.cursor()
                     curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
                     rows = curr.fetchall()
-                    targets_list.delete('0','end')
+                    targets_list.delete('0', 'end')
                     for row in rows:
                         targets_list.insert(END, row[1])
 
                 except ValueError:
                     messagebox.showerror("Error", "נא להכניס רק מספרים בשדה (משקל מטרה)")
 
-            self.add_targets_tk=Tk()
-            self.frame_add_target=Frame(self.add_targets_tk)
+            self.add_targets_tk = Tk()
+            self.frame_add_target = Frame(self.add_targets_tk)
             self.frame_add_target.grid()
-            #self.add_targets_tk.geometry("350x300+650+400")
+            # self.add_targets_tk.geometry("350x300+650+400")
             len_max = 0
             for m in self.curr_user_exercises:
                 if len(m) > len_max:
                     len_max = len(m)
             self.explain_label = Label(self.frame_add_target, text="!הוספת מטרה חדשה ", font="Helvetica 12 underline")
-            self.explain_label.grid(column=1,row=0)
+            self.explain_label.grid(column=1, row=0)
             self.weight_target = StringVar()
             self.weight_target_field = Entry(self.frame_add_target, textvariable=self.weight_target, width=15)
-            self.weight_target_label=Label(self.frame_add_target,text="משקל מטרה")
-            self.weight_target_field.grid(column=1,row=4)
-            self.weight_target_label.grid(column=1,row=3)
-            self.description_text=Text(self.frame_add_target,width=len_max,height=4)
-            self.description_text.grid(column=1,row=6)
-            self.description_label=Label(self.frame_add_target,text="תיאור המטרה")
-            self.description_label.grid(column=1,row=5)
+            self.weight_target_label = Label(self.frame_add_target, text="משקל מטרה")
+            self.weight_target_field.grid(column=1, row=4)
+            self.weight_target_label.grid(column=1, row=3)
+            self.description_text = Text(self.frame_add_target, width=len_max, height=4)
+            self.description_text.grid(column=1, row=6)
+            self.description_label = Label(self.frame_add_target, text="תיאור המטרה")
+            self.description_label.grid(column=1, row=5)
 
             self.title_var = StringVar()
-            self.title_field=Entry(self.frame_add_target,textvariable=self.title_var,width=15)
-            self.title_label=Label(self.frame_add_target,text="כותרת מטרה")
-            self.title_label.grid(column=1,row=1)
-            self.title_field.grid(column=1,row=2)
+            self.title_field = Entry(self.frame_add_target, textvariable=self.title_var, width=15)
+            self.title_label = Label(self.frame_add_target, text="כותרת מטרה")
+            self.title_label.grid(column=1, row=1)
+            self.title_field.grid(column=1, row=2)
 
-            options=["משקל בתרגיל","משקל גוף","מספר אימונים החודש"]
-            self.categorize_menu=ttk.Combobox(self.frame_add_target,values=options)
-            self.categorize_menu.grid(column=1,row=8)
-            self.categorize_label=Label(self.frame_add_target,text="קטגורית מטרה")
-            self.categorize_label.grid(column=1,row=7)
+            options = ["משקל בתרגיל", "משקל גוף", "מספר אימונים החודש"]
+            self.categorize_menu = ttk.Combobox(self.frame_add_target, values=options)
+            self.categorize_menu.grid(column=1, row=8)
+            self.categorize_label = Label(self.frame_add_target, text="קטגורית מטרה")
+            self.categorize_label.grid(column=1, row=7)
             self.exercise_label = Label(self.frame_add_target, text="בחירת תרגיל")
             self.exercise_label.grid(column=1, row=9)
 
-            self.exercises_menu=ttk.Combobox(self.frame_add_target,values=self.curr_user_exercises ,width=len_max)
-            self.exercises_menu.grid(column=1,row=8)
-            today=datetime.today()
-            current_date=today.strftime("%d/%m/%Y")
-            self.starting_date=StringVar()
-            self.starting_date_field=Entry(self.frame_add_target,textvariable=self.starting_date,width=15)
-            self.starting_date_field.insert(0,current_date)
-            self.starting_date_label=Label(self.frame_add_target,text="תאריך התחלה")
-            self.starting_date_label.grid(column=1,row=11)
-            self.starting_date_field.grid(column=1,row=12)
+            self.exercises_menu = ttk.Combobox(self.frame_add_target, values=self.curr_user_exercises, width=len_max)
+            self.exercises_menu.grid(column=1, row=8)
+            today = datetime.today()
+            current_date = today.strftime("%d/%m/%Y")
+            self.starting_date = StringVar()
+            self.starting_date_field = Entry(self.frame_add_target, textvariable=self.starting_date, width=15)
+            self.starting_date_field.insert(0, current_date)
+            self.starting_date_label = Label(self.frame_add_target, text="תאריך התחלה")
+            self.starting_date_label.grid(column=1, row=11)
+            self.starting_date_field.grid(column=1, row=12)
 
-            self.approve_button=Button(self.frame_add_target,text="אישור",command=add_target_to_db)
+            self.approve_button = Button(self.frame_add_target, text="אישור", command=add_target_to_db)
             self.cancel_button = Button(self.frame_add_target, text="ביטול", command=self.add_targets_tk.destroy)
-            self.approve_button.grid(column=0,row=12)
-            self.cancel_button.grid(column=2,row=12)
+            self.approve_button.grid(column=0, row=12)
+            self.cancel_button.grid(column=2, row=12)
 
         def onselect(evt):
             # Note here that Tkinter passes an event object to onselect()
             w = evt.widget
-            #index = w.curselection()[0]
-            #value = w.get(index)
-            #print('You selected item %d: "%s"' % (index, value))
-            print(w.get(ANCHOR))
+            # index = w.curselection()[0]
+            # value = w.get(index)
+            # print('You selected item %d: "%s"' % (index, value))
+            # print(w.get(ANCHOR))
 
-
-            curr.execute("SELECT * FROM Targets WHERE Id=? AND Title=?", (self.curr_user.id,w.get(ANCHOR),))
+            curr.execute("SELECT * FROM Targets WHERE Id=? AND Title=?", (self.curr_user.id, w.get(ANCHOR),))
             rows = curr.fetchall()
-            print(rows)
+            # print(rows)
 
             temp = rows[0][1]
             temp = str(temp)
@@ -1137,7 +1173,7 @@ class GUI():
                 targets_list.insert(END, row[1])
 
         def delete_target():
-            selected=targets_list.get(ANCHOR)
+            selected = targets_list.get(ANCHOR)
             if selected:
                 self.popup = Tk()
                 frame1 = Frame(self.popup, highlightbackground="RED", highlightcolor="RED", highlightthickness=1,
@@ -1159,35 +1195,35 @@ class GUI():
             def edit_target_to_db():
                 try:
                     input_from_weight_target = int(self.weight_target_field.get())
-                    #print(input_from_weight_target)
-                    input_from_description=self.description_text.get("1.0","end-1c")
-                    #print(input_from_description)
-                    categories=self.categorize_menu.get()
-                    #print(categories)
-                    input_from_start_date=self.starting_date_field.get()
-                    #print(input_from_start_date)
-                    exercise_name=self.exercises_menu.get()
-                    #print(exercise_name)
-                    input_from_title=str(self.title_field.get())
-                    #print(input_from_title)
-                    selected_title=targets_list.get(ANCHOR)
-                    curr=self.conn.cursor()
+                    # print(input_from_weight_target)
+                    input_from_description = self.description_text.get("1.0", "end-1c")
+                    # print(input_from_description)
+                    categories = self.categorize_menu.get()
+                    # print(categories)
+                    input_from_start_date = self.starting_date_field.get()
+                    # print(input_from_start_date)
+                    exercise_name = self.exercises_menu.get()
+                    # print(exercise_name)
+                    input_from_title = str(self.title_field.get())
+                    # print(input_from_title)
+                    selected_title = targets_list.get(ANCHOR)
+                    curr = self.conn.cursor()
                     curr.execute(
                         '''UPDATE Targets SET Title=?,WeightTarget=?,ExerciseName=?,Description=?,StartingDate=?
                          WHERE Id=? AND Title=? ''',
-                        (input_from_title, input_from_weight_target,exercise_name, input_from_description, input_from_start_date,self.curr_user.id,selected_title,))
+                        (input_from_title, input_from_weight_target, exercise_name, input_from_description,
+                         input_from_start_date, self.curr_user.id, selected_title,))
                     self.conn.commit()
                     curr = self.conn.cursor()
                     curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
                     rows = curr.fetchall()
-                    targets_list.delete('0','end')
+                    targets_list.delete('0', 'end')
                     for row in rows:
                         targets_list.insert(END, row[1])
                     self.edit_targets_tk.destroy()
 
                 except ValueError:
                     messagebox.showerror("Error", "נא להכניס רק מספרים בשדה (משקל מטרה)")
-
 
             self.edit_targets_tk = Tk()
             self.frame_edit_target = Frame(self.edit_targets_tk)
@@ -1239,58 +1275,45 @@ class GUI():
             self.approve_button.grid(column=0, row=12)
             self.cancel_button.grid(column=2, row=12)
 
-
-
-
-
-
-
         curr = self.conn.cursor()
-        self.targets=Tk()
+        self.targets = Tk()
         self.frame_targets = Frame(self.targets)
         self.frame_targets.grid()
-        #self.targets.geometry("300x300+650+400") #todo change the geometry to fit to center
-        add_target_button=Button(self.frame_targets,text="הוספת מטרה",command=add_target)
-        add_target_button.grid(row=0,column=1)
-        edit_target_button = Button(self.frame_targets, text="עריכת מטרה",command=edit_target)
+        # self.targets.geometry("300x300+650+400") #todo change the geometry to fit to center
+        add_target_button = Button(self.frame_targets, text="הוספת מטרה", command=add_target)
+        add_target_button.grid(row=0, column=1)
+        edit_target_button = Button(self.frame_targets, text="עריכת מטרה", command=edit_target)
         edit_target_button.grid(row=0, column=2)
-        delete_target_button = Button(self.frame_targets, text="מחיקת מטרה",command=delete_target)
+        delete_target_button = Button(self.frame_targets, text="מחיקת מטרה", command=delete_target)
         delete_target_button.grid(row=0, column=3)
 
-        title_label=Label(self.frame_targets,text=":כותרת מטרה ")
-        weight_target_label=Label(self.frame_targets,text=":משקל מטרה ")
-        exercise_name_label=Label(self.frame_targets,text=':שם תרגיל ')
-        description_label=Label(self.frame_targets,text=':תיאור מטרה ')
-        status_label=Label(self.frame_targets,text=':סטטוס מטרה ')
-        state_date_label=Label(self.frame_targets,text=':תאריך התחלה ')
-        finish_date_label=Label(self.frame_targets,text=' :תאריך סיום ')
-        title_label.grid(row=2,column=5)
-        weight_target_label.grid(row=3,column=5)
-        exercise_name_label.grid(row=4,column=5)
-        description_label.grid(row=5,column=5)
-        status_label.grid(row=6,column=5)
-        state_date_label.grid(row=7,column=5)
-        finish_date_label.grid(row=8,column=5)
-
-
+        title_label = Label(self.frame_targets, text=":כותרת מטרה ")
+        weight_target_label = Label(self.frame_targets, text=":משקל מטרה ")
+        exercise_name_label = Label(self.frame_targets, text=':שם תרגיל ')
+        description_label = Label(self.frame_targets, text=':תיאור מטרה ')
+        status_label = Label(self.frame_targets, text=':סטטוס מטרה ')
+        state_date_label = Label(self.frame_targets, text=':תאריך התחלה ')
+        finish_date_label = Label(self.frame_targets, text=' :תאריך סיום ')
+        title_label.grid(row=2, column=5)
+        weight_target_label.grid(row=3, column=5)
+        exercise_name_label.grid(row=4, column=5)
+        description_label.grid(row=5, column=5)
+        status_label.grid(row=6, column=5)
+        state_date_label.grid(row=7, column=5)
+        finish_date_label.grid(row=8, column=5)
 
         ##### handiling targets list
         targets = []
-        targets_list=Listbox(self.frame_targets,listvariable=targets,height=15,name='lb')
-        targets_list.grid(row=2,column=0,rowspan=6, sticky=(W, S, N, E))
+        targets_list = Listbox(self.frame_targets, listvariable=targets, height=15, name='lb')
+        targets_list.grid(row=2, column=0, rowspan=6, sticky=(W, S, N, E))
         targets_label = Label(self.frame_targets, text="רשימת מטרות ", font="Helvetica 12 underline")
-        targets_label.grid(row=1,column=0,sticky=(W,S))
+        targets_label.grid(row=1, column=0, sticky=(W, S))
         targets_list.bind('<<ListboxSelect>>', onselect)
-
 
         curr.execute("SELECT * FROM Targets WHERE Id=?", (self.curr_user.id,))
         rows = curr.fetchall()
-        #print(rows)
+        # print(rows)
         for row in rows:
             targets_list.insert(END, row[1])
 
-
-
         self.targets.mainloop()
-
-
