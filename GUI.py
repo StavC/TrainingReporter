@@ -166,31 +166,30 @@ class GUI():
 
         print(len(rows))
         x = 20
-        y = 20
+        y = 25
         cell_h = 25
         number_in_row = 0
 
         for i in range(0, len(rows)):
             print(rows[i][1])
-            pdf.set_fill_color(100, 255, 0)
-            pdf.rect(x, y, 70, 70, 'F')
-            pdf.set_xy(x,y)
+            #pdf.set_fill_color(100, 255, 0)
+            #pdf.rect(x, y, 70, 70, 'F')
+            pdf.image('Inputs\\note.png',x=x,y=y,w=80,h=80)
+            text_x=x
+            text_y=y
+            pdf.set_xy(x+10,y+13)
             last_y=y
-            pdf.multi_cell(70,10, txt=get_display("כותרת: " + str(rows[i][1])), align='R',border=1)
+            pdf.multi_cell(70,10, txt=get_display("כותרת: " + str(rows[i][1])), align='C',border=0)
             y=y+10
-            pdf.set_xy(x, y)
-            pdf.multi_cell(70,10, txt=get_display("משקל מטרה: " + str(rows[i][2])), align='R',border=1)
+            pdf.set_xy(x+8, y+10)
+            pdf.multi_cell(70,10, txt=get_display("משקל מטרה: " + str(rows[i][2])), align='R',border=0)
+            y = y + 10
+            pdf.set_xy(x+8, y+10)
+            pdf.multi_cell(70,10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R',border=0)
             y = y + 10
             pdf.set_xy(x, y)
-            pdf.multi_cell(70,10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R',border=1)
-            y = y + 10
-            pdf.set_xy(x, y)
-            pdf.multi_cell(70,10, txt=get_display("תיאור: " + str(rows[i][4])), align='R',border=1)
-            y = y + 20
-            pdf.set_xy(x, y)
+
             y=last_y
-
-
             #pdf.cell(10, h=cell_h, txt="",border=3)
             #pdf.text(x+5 , y+5, txt=get_display("כותרת: "+str(rows[i][1])))
             number_in_row += 1
