@@ -159,8 +159,8 @@ class GUI():
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
         pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
-        pdf.set_font("Abraham-Regular", '', size=10)
-        # pdf.cell(200,10,txt=get_display("אז מה היה לנו החודש"),ln=1,align='C')
+        pdf.set_font("Abraham-Regular", '', size=20)
+        pdf.cell(200,10,txt=get_display("המטרות שעמדת בהם החודש"),ln=1,align='C')
         curr = self.conn.cursor()
         curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "הושלמה",))
         rows = curr.fetchall()
@@ -213,6 +213,8 @@ class GUI():
 
 
         pdf.add_page()
+        pdf.set_font("Abraham-Regular", '', size=20)
+        pdf.cell(200,10,txt=get_display("המטרות שלא עמדת בהם החודש"),ln=1,align='C')
 
         curr = self.conn.cursor()
         curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "לא הושלמה",))
@@ -259,7 +261,7 @@ class GUI():
                 x = 20
                 y += 90
 
-        pdf.output('OutPuts\\simple_table.pdf')
+        pdf.output('OutPuts\\Targets.pdf')
 
     def make_monthly_report(self):
 
@@ -292,9 +294,12 @@ class GUI():
         file2 = PdfFileReader('OutPuts\\DiagramWeights.pdf', "rb")
         file3 = PdfFileReader('OutPuts\\FullExercisesReport.pdf', "rb")
         file4 = PdfFileReader('OutPuts\\BodyWeights.pdf', "rb")
+        file5= PdfFileReader('OutPuts\\Targets.pdf')
 
         output = PdfFileWriter()
         output.addPage(file0.getPage(0))
+        output.addPage(file5.getPage(0))
+        output.addPage(file5.getPage(1))
         output.addPage(file2.getPage(0))
         output.addPage(file1.getPage(0))
         output.addPage(file4.getPage(0))
