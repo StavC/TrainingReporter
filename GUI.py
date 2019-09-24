@@ -175,19 +175,27 @@ class GUI():
             #pdf.set_fill_color(100, 255, 0)
             #pdf.rect(x, y, 70, 70, 'F')
             pdf.image('Inputs\\note.png',x=x,y=y,w=80,h=80)
+            pdf.image('Inputs\\DidIt.png',x=x,y=y+30,w=40,h=40)
             text_x=x
             text_y=y
             pdf.set_xy(x+10,y+13)
             last_y=y
-            pdf.multi_cell(70,10, txt=get_display("כותרת: " + str(rows[i][1])), align='C',border=0)
-            y=y+10
+            pdf.set_font("Abraham-Regular", '', size=14)
+            pdf.multi_cell(70,10, txt=get_display(  str(rows[i][1])), align='C',border=0)
+            pdf.set_font("Abraham-Regular", '', size=10)
+            y=y+13
+            pdf.set_xy(x+8, y+10)
+            pdf.multi_cell(70,10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R',border=0)
+            y = y + 10
             pdf.set_xy(x+8, y+10)
             pdf.multi_cell(70,10, txt=get_display("משקל מטרה: " + str(rows[i][2])), align='R',border=0)
             y = y + 10
             pdf.set_xy(x+8, y+10)
-            pdf.multi_cell(70,10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R',border=0)
+            pdf.multi_cell(70,10, txt=get_display("תאריך התחלה: " + str(rows[i][6])), align='R',border=0)
             y = y + 10
-            pdf.set_xy(x, y)
+            pdf.set_xy(x + 8, y + 10)
+            pdf.multi_cell(70,10, txt=get_display("תאריך סיום: " + str(rows[i][7])), align='R',border=0)
+
 
             y=last_y
             #pdf.cell(10, h=cell_h, txt="",border=3)
@@ -204,24 +212,7 @@ class GUI():
             # pdf.rect(110,20,70,70,'F')
             # pdf.rect(200,20,70,70,'F')
 
-        '''
-        for row in rows:
 
-                # Enter data in colums
-                # Notice the use of the function str to coerce any input to the
-                # string type. This is needed
-                # since pyFPDF expects a string, not a number.
-                pdf.cell(col_width, row_height*2, txt=get_display(str(row[1])), border=1)
-                pdf.cell(col_width, row_height*2, txt=str(row[2]), border=1)
-                pdf.cell(col_width, row_height*2, txt=get_display(str(row[3])), border=1)
-                pdf.cell(col_width, row_height*2, txt=get_display(str(row[4])), border=1)
-                pdf.cell(col_width, row_height*2, txt=get_display(str(row[5])), border=1)
-                pdf.cell(col_width, row_height*2, txt=str(row[6]), border=1)
-                pdf.cell(col_width, row_height*2, txt=str(row[7]), border=1)
-
-                #pdf.cell(col_width, row_height, txt=str(item)[::-1], border=1)
-                pdf.ln(row_height)
-        '''
         pdf.output('OutPuts\\simple_table.pdf')
 
     def make_monthly_report(self):
