@@ -14,8 +14,8 @@ from datetime import datetime
 from Calendar import MplCalendar
 from tkinter import ttk
 from bidi.algorithm import get_display
-FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
 
+FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
 
 class GUI():
 
@@ -154,47 +154,56 @@ class GUI():
 
     def make_summary_page(self):
 
-        pdf=FPDF(orientation = 'P',format=(290,300))
+        pdf = FPDF(orientation='P', format=(290, 300))
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
         pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
-        pdf.set_font("Abraham-Regular", '', size=20)
-        pdf.cell(200,10,txt=get_display("אז מה היה לנו החודש"),ln=1,align='C')
+        pdf.set_font("Abraham-Regular", '', size=10)
+        # pdf.cell(200,10,txt=get_display("אז מה היה לנו החודש"),ln=1,align='C')
         curr = self.conn.cursor()
-        curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?',(self.curr_user.id,"הושלמה",))
-        rows=curr.fetchall()
-        print(pdf.w)
-        print(pdf.h)
+        curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "הושלמה",))
+        rows = curr.fetchall()
 
         print(len(rows))
         x = 20
         y = 20
+        cell_h = 25
         number_in_row = 0
-        for i in range(0,len(rows)):
-            print(x)
-            print(y)
 
+        for i in range(0, len(rows)):
+            print(rows[i][1])
             pdf.set_fill_color(100, 255, 0)
-            pdf.rect(x,y,70,70,'F')
-            number_in_row+=1
-            x+=90
-            if number_in_row==3:
-                number_in_row=0
-                x=20
-                y+=90
+            pdf.rect(x, y, 70, 70, 'F')
+            pdf.set_xy(x,y)
+            last_y=y
+            pdf.multi_cell(70,10, txt=get_display("כותרת: " + str(rows[i][1])), align='R',border=1)
+            y=y+10
+            pdf.set_xy(x, y)
+            pdf.multi_cell(70,10, txt=get_display("משקל מטרה: " + str(rows[i][2])), align='R',border=1)
+            y = y + 10
+            pdf.set_xy(x, y)
+            pdf.multi_cell(70,10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R',border=1)
+            y = y + 10
+            pdf.set_xy(x, y)
+            pdf.multi_cell(70,10, txt=get_display("תיאור: " + str(rows[i][4])), align='R',border=1)
+            y = y + 20
+            pdf.set_xy(x, y)
+            y=last_y
 
 
-            #pdf.rect(110,20,70,70,'F')
-            #pdf.rect(200,20,70,70,'F')
+            #pdf.cell(10, h=cell_h, txt="",border=3)
+            #pdf.text(x+5 , y+5, txt=get_display("כותרת: "+str(rows[i][1])))
+            number_in_row += 1
+            x += 90
+
+            if number_in_row == 3:
+                number_in_row = 0
+                x = 20
+                y += 90
 
 
-
-
-
-
-        epw = pdf.w - 2 * pdf.l_margin
-        col_width = epw/8
-        row_height = pdf.font_size
+            # pdf.rect(110,20,70,70,'F')
+            # pdf.rect(200,20,70,70,'F')
 
         '''
         for row in rows:
@@ -217,7 +226,6 @@ class GUI():
         pdf.output('OutPuts\\simple_table.pdf')
 
     def make_monthly_report(self):
-
 
         self.make_summary_page()
         pdf = FPDF()
@@ -1076,7 +1084,7 @@ class GUI():
                         cal.add_event(day, "'")
         cal.show()
 
-    def open_targets_frame(self):
+    def open_targets_frame(self):  # todo add open target limit to 9
 
         def add_target():
 
