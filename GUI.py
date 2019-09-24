@@ -154,6 +154,7 @@ class GUI():
 
     def make_summary_page(self):
 
+
         pdf = FPDF(orientation='P', format=(290, 300))
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
@@ -175,9 +176,7 @@ class GUI():
             #pdf.set_fill_color(100, 255, 0)
             #pdf.rect(x, y, 70, 70, 'F')
             pdf.image('Inputs\\note.png',x=x,y=y,w=80,h=80)
-            pdf.image('Inputs\\DidIt.png',x=x,y=y+30,w=40,h=40)
-            text_x=x
-            text_y=y
+            pdf.image('Inputs\\DidIt.png',x=x,y=y+35,w=40,h=40)
             pdf.set_xy(x+10,y+13)
             last_y=y
             pdf.set_font("Abraham-Regular", '', size=14)
@@ -212,6 +211,53 @@ class GUI():
             # pdf.rect(110,20,70,70,'F')
             # pdf.rect(200,20,70,70,'F')
 
+
+        pdf.add_page()
+
+        curr = self.conn.cursor()
+        curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "לא הושלמה",))
+        rows = curr.fetchall()
+
+        print(len(rows))
+        x = 20
+        y = 25
+        cell_h = 25
+        number_in_row = 0
+
+        for i in range(0, len(rows)):
+            print(rows[i][1])
+            # pdf.set_fill_color(100, 255, 0)
+            # pdf.rect(x, y, 70, 70, 'F')
+            pdf.image('Inputs\\note.png', x=x, y=y, w=80, h=80)
+            pdf.image('Inputs\\DontGiveUp.png', x=x, y=y + 35, w=40, h=40)
+            pdf.set_xy(x + 10, y + 13)
+            last_y = y
+            pdf.set_font("Abraham-Regular", '', size=14)
+            pdf.multi_cell(70, 10, txt=get_display(str(rows[i][1])), align='C', border=0)
+            pdf.set_font("Abraham-Regular", '', size=10)
+            y = y + 13
+            pdf.set_xy(x + 8, y + 10)
+            pdf.multi_cell(70, 10, txt=get_display("תרגיל: " + str(rows[i][3])), align='R', border=0)
+            y = y + 10
+            pdf.set_xy(x + 8, y + 10)
+            pdf.multi_cell(70, 10, txt=get_display("משקל מטרה: " + str(rows[i][2])), align='R', border=0)
+            y = y + 10
+            pdf.set_xy(x + 8, y + 10)
+            pdf.multi_cell(70, 10, txt=get_display("תאריך התחלה: " + str(rows[i][6])), align='R', border=0)
+            y = y + 10
+            pdf.set_xy(x + 8, y + 10)
+            pdf.multi_cell(70, 10, txt=get_display("תאריך סיום: " + str(rows[i][7])), align='R', border=0)
+
+            y = last_y
+            # pdf.cell(10, h=cell_h, txt="",border=3)
+            # pdf.text(x+5 , y+5, txt=get_display("כותרת: "+str(rows[i][1])))
+            number_in_row += 1
+            x += 90
+
+            if number_in_row == 3:
+                number_in_row = 0
+                x = 20
+                y += 90
 
         pdf.output('OutPuts\\simple_table.pdf')
 
