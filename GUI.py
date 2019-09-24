@@ -13,7 +13,7 @@ from fpdf import FPDF
 from datetime import datetime
 from Calendar import MplCalendar
 from tkinter import ttk
-
+from bidi.algorithm import get_display
 FPDF.SYSTEM_TTFONTS = '/path/to/system/fonts'
 
 
@@ -154,27 +154,66 @@ class GUI():
 
     def make_summary_page(self):
 
-        pdf=FPDF(format='letter', unit='in')
+        pdf=FPDF(orientation = 'P',format=(290,300))
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
         pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
-        pdf.set_font("Abraham-Regular", '', size=10)
-        pdf.cell(200,10,txt="אז מה היה לנו החודש",ln=1,align='C')
+        pdf.set_font("Abraham-Regular", '', size=20)
+        pdf.cell(200,10,txt=get_display("אז מה היה לנו החודש"),ln=1,align='C')
         curr = self.conn.cursor()
-        curr.execute('SELECT * FROM Targets WHERE Id=?',(self.curr_user.id,))
+        curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?',(self.curr_user.id,"הושלמה",))
         rows=curr.fetchall()
-        epw = pdf.w - 2 * pdf.l_margin
+        print(pdf.w)
+        print(pdf.h)
 
+        print(len(rows))
+        x = 20
+        y = 20
+        number_in_row = 0
+        for i in range(0,len(rows)):
+            print(x)
+            print(y)
+
+            pdf.set_fill_color(100, 255, 0)
+            pdf.rect(x,y,70,70,'F')
+            number_in_row+=1
+            x+=90
+            if number_in_row==3:
+                number_in_row=0
+                x=20
+                y+=90
+
+
+            #pdf.rect(110,20,70,70,'F')
+            #pdf.rect(200,20,70,70,'F')
+
+
+
+
+
+
+        epw = pdf.w - 2 * pdf.l_margin
         col_width = epw/8
         row_height = pdf.font_size
+
+        '''
         for row in rows:
-            for item in row:
+
                 # Enter data in colums
                 # Notice the use of the function str to coerce any input to the
                 # string type. This is needed
                 # since pyFPDF expects a string, not a number.
-                pdf.cell(col_width, row_height, txt=str(item), border=1)
-            pdf.ln(row_height)
+                pdf.cell(col_width, row_height*2, txt=get_display(str(row[1])), border=1)
+                pdf.cell(col_width, row_height*2, txt=str(row[2]), border=1)
+                pdf.cell(col_width, row_height*2, txt=get_display(str(row[3])), border=1)
+                pdf.cell(col_width, row_height*2, txt=get_display(str(row[4])), border=1)
+                pdf.cell(col_width, row_height*2, txt=get_display(str(row[5])), border=1)
+                pdf.cell(col_width, row_height*2, txt=str(row[6]), border=1)
+                pdf.cell(col_width, row_height*2, txt=str(row[7]), border=1)
+
+                #pdf.cell(col_width, row_height, txt=str(item)[::-1], border=1)
+                pdf.ln(row_height)
+        '''
         pdf.output('OutPuts\\simple_table.pdf')
 
     def make_monthly_report(self):
