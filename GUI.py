@@ -160,6 +160,7 @@ class GUI():
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
         pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
         pdf.set_font("Abraham-Regular", '', size=20)
+        pdf.image('Inputs\\board2.jpg',x=0,y=0,w=295,h=290)
         pdf.cell(200,10,txt=get_display("המטרות שעמדת בהם החודש"),ln=1,align='C')
         curr = self.conn.cursor()
         curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "הושלמה",))
