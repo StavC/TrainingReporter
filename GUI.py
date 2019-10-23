@@ -160,10 +160,11 @@ class GUI():
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
         pdf.add_font('Abraham-Regular', '', 'Fonts\\Abraham-Regular.ttf', uni=True)
         pdf.set_font("Abraham-Regular", '', size=20)
-        pdf.image('Inputs\\board2.jpg',x=0,y=0,w=295,h=290)
-        pdf.cell(200,10,txt=get_display("המטרות שעמדת בהם החודש"),ln=1,align='C')
+        pdf.image('Inputs\\board2.jpg',x=-7,y=0,w=300,h=300)
+        pdf.cell(280,15,txt=get_display("סיכום מטרות החודש"),ln=1,align='C')
         curr = self.conn.cursor()
-        curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "הושלמה",))
+        #curr.execute('SELECT * FROM Targets WHERE Id=? AND Status=?', (self.curr_user.id, "הושלמה",))
+        curr.execute('SELECT * FROM Targets WHERE Id=?',(self.curr_user.id,))
         rows = curr.fetchall()
 
         print(len(rows))
@@ -173,11 +174,18 @@ class GUI():
         number_in_row = 0
 
         for i in range(0, len(rows)):
-            print(rows[i][1])
+            #print(rows[i][1])
             #pdf.set_fill_color(100, 255, 0)
             #pdf.rect(x, y, 70, 70, 'F')
+
+
             pdf.image('Inputs\\note.png',x=x,y=y,w=80,h=80)
-            pdf.image('Inputs\\DidIt.png',x=x,y=y+35,w=40,h=40)
+            if rows[i]:
+                 if rows[i][5]=='הושלמה':
+                     pdf.image('Inputs\\DidIt.png', x=x, y=y + 35, w=40, h=40)
+                 else:
+                     pdf.image('Inputs\\DontGiveUp.png', x=x, y=y + 35, w=40, h=40)
+            #pdf.image('Inputs\\DidIt.png',x=x,y=y+35,w=40,h=40)
             pdf.set_xy(x+10,y+13)
             last_y=y
             pdf.set_font("Abraham-Regular", '', size=14)
@@ -207,6 +215,7 @@ class GUI():
                 number_in_row = 0
                 x = 20
                 y += 90
+
 
 
             # pdf.rect(110,20,70,70,'F')
@@ -1148,6 +1157,8 @@ class GUI():
                     input_from_title = str(self.title_field.get())
                     # print(input_from_title)
                     curr = self.conn.cursor()
+
+
                     curr.execute(
                         "INSERT INTO Targets(Id,Title,WeightTarget,ExerciseName,Description,Status,StartingDate,FinishedDate,Categorize)VALUES(?,?,?,?,?,?,?,?,?)",
                         (self.curr_user.id, input_from_title, input_from_weight_target, exercise_name,
@@ -1263,6 +1274,8 @@ class GUI():
             targets_list.delete('0', 'end')
             for row in rows:
                 targets_list.insert(END, row[1])
+            add_target_button.config(state="normal")
+
 
         def delete_target():
             selected = targets_list.get(ANCHOR)
@@ -1273,7 +1286,7 @@ class GUI():
                 frame1.pack()
                 self.popup.overrideredirect(1)
                 self.popup.geometry("300x75+650+400")
-                lbl = Label(frame1, text="אתה בטוח שאתה את המטרה ?")
+                lbl = Label(frame1, text="אתה בטוח שאתה רוצה למחוק את המטרה ?")
                 lbl.pack()
                 yes_btn = Button(frame1, text="Yes", bg="light blue", fg="red",
                                  command=delete_target_from_db, width=10)
@@ -1407,6 +1420,10 @@ class GUI():
         # print(rows)
         for row in rows:
             targets_list.insert(END, row[1])
+        if targets_list.size()==9:
+            add_target_button.config(state="disabled")
+        else:
+            add_target_button.config(state="normal")
 
         self.targets.mainloop()
 
