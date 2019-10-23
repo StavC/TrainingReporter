@@ -152,7 +152,7 @@ class GUI():
             self.user_compare_to_avg_function()
             self.make_monthly_report()
 
-    def make_summary_page(self):
+    def make_targets_page(self):
 
 
         pdf = FPDF(orientation='P', format=(290, 300))
@@ -266,7 +266,7 @@ class GUI():
 
     def make_monthly_report(self):
 
-        self.make_summary_page()
+        self.make_targets_page()
         pdf = FPDF()
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
@@ -1406,3 +1406,4 @@ class GUI():
             targets_list.insert(END, row[1])
 
         self.targets.mainloop()
+
