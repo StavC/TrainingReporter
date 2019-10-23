@@ -35,9 +35,14 @@ First Page
 
 ![alt_text](https://i.imgur.com/QAe1gWv.png)
 
+Target System in building
+![alt_text](https://i.imgur.com/fl2QXDW.png)
+
 Example of the CSV Files that the program read
 
 ![alt_text](https://i.imgur.com/GJO7Ohn.png)
+
+
 
 
 MUCH MORE COMING SOON!
