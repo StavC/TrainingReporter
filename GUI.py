@@ -154,7 +154,7 @@ class GUI():
 
     def make_targets_page(self):
 
-
+        self.check_for_success()
         pdf = FPDF(orientation='P', format=(290, 300))
         pdf.add_page()
         pdf.add_font('arial', '', 'Fonts\\arial.ttf', uni=True)
@@ -1128,18 +1128,7 @@ class GUI():
 
     def open_targets_frame(self):  # todo add open target limit to 9
 
-        def check_for_success():
-            curr = self.conn.cursor()
-            curr.execute('SELECT * FROM Targets WHERE Id=?', (self.curr_user.id,))
-            rows = curr.fetchall()
-            for row in rows:
 
-                curr_weight_target=row[2]
-                curr_exercise_name=row[3]
-                curr.execute('SELECT * FROM Exercises WHERE Id=? AND ExerciseName=? AND Weight=?',(self.curr_user.id,curr_exercise_name,curr_weight_target,))
-                rows_inside=curr.fetchall()
-                if rows_inside:
-                    curr_date=rows_inside[0][2]
 
 
         def add_target():
@@ -1421,3 +1410,24 @@ class GUI():
 
         self.targets.mainloop()
 
+    def check_for_success(self):
+        curr = self.conn.cursor()
+        curr.execute('SELECT * FROM Targets WHERE Id=?', (self.curr_user.id,))
+        rows = curr.fetchall()
+        for row in rows:
+
+            curr_weight_target = row[2]
+            curr_exercise_name = row[3]
+            curr.execute('SELECT * FROM Exercises WHERE Id=? AND ExerciseName=? ',
+                         (self.curr_user.id, curr_exercise_name,))
+            rows_inside = curr.fetchall()
+
+
+            if rows_inside:
+                for row_inside in rows_inside:
+                    if row_inside[3]>=curr_weight_target:
+                     curr_date = row_inside[2]
+                     curr.execute('''UPDATE Targets SET Status=?,FinishedDate=? WHERE ID=? AND ExerciseName=? ''', ('הושלמה',
+                                  curr_date, self.curr_user.id, curr_exercise_name, ))
+                     self.conn.commit()
+                     break
