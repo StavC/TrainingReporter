@@ -1128,6 +1128,20 @@ class GUI():
 
     def open_targets_frame(self):  # todo add open target limit to 9
 
+        def check_for_success():
+            curr = self.conn.cursor()
+            curr.execute('SELECT * FROM Targets WHERE Id=?', (self.curr_user.id,))
+            rows = curr.fetchall()
+            for row in rows:
+
+                curr_weight_target=row[2]
+                curr_exercise_name=row[3]
+                curr.execute('SELECT * FROM Exercises WHERE Id=? AND ExerciseName=? AND Weight=?',(self.curr_user.id,curr_exercise_name,curr_weight_target,))
+                rows_inside=curr.fetchall()
+                if rows_inside:
+                    curr_date=rows_inside[0][2]
+
+
         def add_target():
 
             def add_target_to_db():
