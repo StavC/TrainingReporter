@@ -13,6 +13,7 @@ from io import BytesIO
 class User(object):
 
     def __init__(self, id, first_name, last_name, gender, height, weight,age,start_date,current_weight):
+       # the user object with all of his details
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
